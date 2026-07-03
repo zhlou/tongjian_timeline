@@ -32,7 +32,6 @@
     sectionOrder: [],
     centuryOrder: [],
     renderedIds: new Set(),
-    observer: null,
     syncPending: false,
   };
 
@@ -433,7 +432,6 @@
       if (!block) continue;
       state.renderedIds.add(id);
       $contentScroll.appendChild(block);
-      if (state.observer) state.observer.observe(block);
     }
     recycleDOM();
   }
@@ -465,7 +463,6 @@
       } else {
         $contentScroll.appendChild(block);
       }
-      if (state.observer) state.observer.observe(block);
     }
     recycleDOM();
   }
@@ -483,7 +480,6 @@
     while (activeIdx - range.start > 25 && blocks.length > 40) {
       const b = $contentScroll.querySelector(".section-block:first-child");
       if (!b || b.dataset.sectionId === state.activeSectionId) break;
-      if (state.observer) state.observer.unobserve(b);
       b.remove();
       state.renderedIds.delete(b.dataset.sectionId);
       range.start++;
@@ -493,7 +489,6 @@
     while (range.end - activeIdx > 25 && blocks.length > 40) {
       const b = $contentScroll.querySelector(".section-block:last-child");
       if (!b || b.dataset.sectionId === state.activeSectionId) break;
-      if (state.observer) state.observer.unobserve(b);
       b.remove();
       state.renderedIds.delete(b.dataset.sectionId);
       range.end--;
@@ -502,22 +497,39 @@
   }
 
   /* ==================== IntersectionObserver ==================== */
-  function setupObserver() {
-    state.observer = new IntersectionObserver((entries) => {
-      if (state.syncPending) return;
-      const visible = entries.filter(e => e.isIntersecting && e.intersectionRatio >= 0.4);
-      if (visible.length === 0) return;
-
-      visible.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-      const top = visible[0];
-      const sid = top.target.dataset.sectionId;
-      if (sid && sid !== state.activeSectionId) {
-        setActiveSection(sid);
-      }
-    }, { root: $contentScroll, threshold: [0.4] });
-
+  function findTopSectionId() {
     const blocks = $contentScroll.querySelectorAll(".section-block");
-    for (const b of blocks) state.observer.observe(b);
+    if (blocks.length === 0) return null;
+    const rootTop = $contentScroll.getBoundingClientRect().top;
+    let best = null;
+    for (const b of blocks) {
+      const top = b.getBoundingClientRect().top;
+      if (top <= rootTop + 5) {
+        if (!best || top > best.top) {
+          best = { sid: b.dataset.sectionId, top };
+        }
+      }
+    }
+    return best ? best.sid : null;
+  }
+
+  function checkActiveOnScroll() {
+    if (state.syncPending) return;
+    const sid = findTopSectionId();
+    if (sid && sid !== state.activeSectionId) {
+      setActiveSection(sid);
+    }
+  }
+
+  function setupObserver() {
+    let scrollCheckTimer = null;
+    $contentScroll.addEventListener("scroll", () => {
+      if (scrollCheckTimer) return;
+      scrollCheckTimer = requestAnimationFrame(() => {
+        scrollCheckTimer = null;
+        checkActiveOnScroll();
+      });
+    }, { passive: true });
   }
 
   function setActiveSection(sid) {
