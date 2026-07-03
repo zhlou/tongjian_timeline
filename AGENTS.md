@@ -16,6 +16,11 @@ Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpu
 
  ## Web app
 
+Requires Python venv with Flask:
+```bash
+uv venv && source .venv/bin/activate && uv pip install -r requirements.txt
+```
+
 ```bash
 python scripts/build_indices.py   # semantic_json → indices.json (must run first)
 python src/app.py                 # start web server at http://localhost:5000

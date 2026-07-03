@@ -7,7 +7,12 @@ Flask app under `src/` that loads `indices.json` and serves the API + static fil
 - `src/app.py` — Flask backend
 
 ## Dependencies
-- Flask (`pip install flask`)
+- Python 3.8+
+- Flask — installed via `uv`:
+  ```bash
+  uv venv && source .venv/bin/activate && uv pip install -r requirements.txt
+  ```
+- `uv` located at `~/.local/bin/uv`
 
 ## Tasks
 
@@ -63,6 +68,7 @@ if __name__ == "__main__":
 ```
 
 ## Verification
+- Activate venv: `source .venv/bin/activate`
 - `python src/app.py` starts without error
 - Curl:
   - `curl http://localhost:5000/api/indices` → returns metadata
