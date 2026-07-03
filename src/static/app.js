@@ -545,7 +545,22 @@
     if (next) next.classList.add("active-section");
   }
 
+  function collapseAllTreeNodes() {
+    state.expandedNodes.clear();
+    const allChildUls = $treeContainer.querySelectorAll("li > ul");
+    for (const ul of allChildUls) {
+      ul.style.display = "none";
+      const node = ul.parentElement.querySelector(".tree-node");
+      if (node) {
+        const toggle = node.querySelector(".tree-toggle");
+        if (toggle) toggle.textContent = "▶";
+      }
+    }
+  }
+
   function syncTreeToSection(sid) {
+    collapseAllTreeNodes();
+
     $treeContainer.querySelectorAll(".tree-node.active").forEach(n => n.classList.remove("active"));
 
     const leaf = $treeContainer.querySelector(`.tree-leaf[data-section-id="${sid}"]`);
@@ -603,6 +618,9 @@
     const idx = state.sectionOrder.indexOf(sid);
     if (idx < 0) return;
 
+    state.syncPending = true;
+    clearTimeout(state._navTimeout);
+
     const start = Math.max(0, idx - 10);
     const end = Math.min(state.sectionOrder.length - 1, idx + 10);
 
@@ -619,6 +637,10 @@
     if (block) {
       block.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "instant" });
     }
+
+    state._navTimeout = setTimeout(() => {
+      state.syncPending = false;
+    }, smooth ? 1200 : 100);
 
     saveState();
   }

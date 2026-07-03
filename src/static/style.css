@@ -278,7 +278,6 @@ body {
   border-top: 1px solid #e0e0e0;
   color: #888;
   font-size: 14px;
-  user-select: none;
 }
 
 .section-block:first-child .section-header { border-top: none; }
