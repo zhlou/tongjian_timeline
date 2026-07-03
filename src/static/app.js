@@ -612,6 +612,14 @@
   }
 
   /* ==================== Navigation ==================== */
+  function _onNavScroll() {
+    clearTimeout(state._navTimeout);
+    state._navTimeout = setTimeout(() => {
+      state.syncPending = false;
+      $contentScroll.removeEventListener("scroll", _onNavScroll);
+    }, 200);
+  }
+
   async function navigateToSection(sid, smooth) {
     if (smooth === undefined) smooth = true;
 
@@ -620,6 +628,7 @@
 
     state.syncPending = true;
     clearTimeout(state._navTimeout);
+    $contentScroll.removeEventListener("scroll", _onNavScroll);
 
     const start = Math.max(0, idx - 10);
     const end = Math.min(state.sectionOrder.length - 1, idx + 10);
@@ -638,9 +647,13 @@
       block.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "instant" });
     }
 
+    $contentScroll.addEventListener("scroll", _onNavScroll, { passive: true });
+    _onNavScroll();
+
     state._navTimeout = setTimeout(() => {
       state.syncPending = false;
-    }, smooth ? 1200 : 100);
+      $contentScroll.removeEventListener("scroll", _onNavScroll);
+    }, 5000);
 
     saveState();
   }
