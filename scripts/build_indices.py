@@ -70,7 +70,9 @@ def build_indices():
     files = sorted(sem_dir.glob("*.json"))
 
     dynasties = {}
+    dynasty_order = []
     volumes = {}
+    volume_order = []
     eras = {}
     era_years = {}
     western_years = {}
@@ -90,8 +92,12 @@ def build_indices():
         dynasty = extract_dynasty(raw_volume_name)
         cleaned_name = raw_volume_name.replace("\u3010", "").replace("\u3011", "").strip()
 
-        volumes.setdefault(cleaned_name, [])
-        dynasties.setdefault(dynasty, [])
+        if cleaned_name not in volumes:
+            volumes[cleaned_name] = []
+            volume_order.append(cleaned_name)
+        if dynasty not in dynasties:
+            dynasties[dynasty] = []
+            dynasty_order.append(dynasty)
 
         volume_meta[cleaned_name] = {
             "time_cycle": volume_time_cycle,
@@ -160,7 +166,9 @@ def build_indices():
 
     indices = {
         "dynasties": dynasties,
+        "dynasty_order": dynasty_order,
         "volumes": volumes,
+        "volume_order": volume_order,
         "eras": eras,
         "era_years": era_years,
         "western_years": western_years,

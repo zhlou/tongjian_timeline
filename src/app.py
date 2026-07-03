@@ -44,7 +44,9 @@ def api_indices():
         return jsonify({"error": "indices.json not found"}), 500
     return jsonify({
         "dynasties": {k: list(v) for k, v in _dynasties.items()},
+        "dynasty_order": _indices.get("dynasty_order", []),
         "volumes": {k: list(v) for k, v in _volumes.items()},
+        "volume_order": _indices.get("volume_order", []),
         "eras": {k: list(v) for k, v in _eras.items()},
         "era_years": _era_years,
         "western_years": _western_years,

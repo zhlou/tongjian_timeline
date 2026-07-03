@@ -102,7 +102,7 @@
 
   /* ==================== Tree ==================== */
   function buildTree() {
-    const { dynasties, volumes, eras, volume_meta } = state.indices;
+    const { dynasties, volumes, eras, volume_meta, dynasty_order, volume_order } = state.indices;
 
     const dynastyVols = {};
     for (const [vol, ids] of Object.entries(volumes)) {
@@ -118,16 +118,21 @@
       }
     }
 
-    const dynastyOrder = Object.keys(dynasties).sort();
+    const dynastyList = dynasty_order || Object.keys(dynasties);
 
     const rootUl = el("ul", "tree-list");
 
-    for (const d of dynastyOrder) {
+    for (const d of dynastyList) {
       const volsForDynasty = dynastyVols[d] || [];
+
+      const volOrderMap = {};
+      if (volume_order) {
+        volume_order.forEach((v, i) => { volOrderMap[v] = i; });
+      }
       volsForDynasty.sort((a, b) => {
-        const fiA = volume_meta[a.name]?.file_index || "";
-        const fiB = volume_meta[b.name]?.file_index || "";
-        return fiA.localeCompare(fiB);
+        const oa = volOrderMap[a.name] ?? 9999;
+        const ob = volOrderMap[b.name] ?? 9999;
+        return oa - ob;
       });
 
       const dLi = el("li");

@@ -20,6 +20,7 @@ body {
   flex-direction: column;
   border-right: 1px solid #ddd;
   background: #f2f2f2;
+  overflow: hidden;
 }
 
 #sidebar-timeline {
@@ -27,7 +28,11 @@ body {
   flex-direction: column;
   border-right: 1px solid #ddd;
   background: #f2f2f2;
+  overflow: hidden;
 }
+
+#tree-container { min-height: 0; }
+#timeline-container { min-height: 0; }
 
 #content {
   display: flex;
