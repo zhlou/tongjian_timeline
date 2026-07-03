@@ -626,6 +626,10 @@
     const idx = state.sectionOrder.indexOf(sid);
     if (idx < 0) return;
 
+    const currentFi = state.activeSectionId ? parseInt(state.activeSectionId.split("-")[0], 10) : -1;
+    const targetFi = parseInt(sid.split("-")[0], 10);
+    const useSmoothScroll = smooth && Math.abs(targetFi - currentFi) <= 1;
+
     state.syncPending = true;
     clearTimeout(state._navTimeout);
     $contentScroll.removeEventListener("scroll", _onNavScroll);
@@ -644,16 +648,19 @@
 
     const block = $contentScroll.querySelector(`.section-block[data-section-id="${sid}"]`);
     if (block) {
-      block.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "instant" });
+      block.scrollIntoView({ block: "start", behavior: useSmoothScroll ? "smooth" : "instant" });
     }
 
-    $contentScroll.addEventListener("scroll", _onNavScroll, { passive: true });
-    _onNavScroll();
-
-    state._navTimeout = setTimeout(() => {
-      state.syncPending = false;
-      $contentScroll.removeEventListener("scroll", _onNavScroll);
-    }, 5000);
+    if (useSmoothScroll) {
+      $contentScroll.addEventListener("scroll", _onNavScroll, { passive: true });
+      _onNavScroll();
+      state._navTimeout = setTimeout(() => {
+        state.syncPending = false;
+        $contentScroll.removeEventListener("scroll", _onNavScroll);
+      }, 5000);
+    } else {
+      state._navTimeout = setTimeout(() => { state.syncPending = false; }, 200);
+    }
 
     saveState();
   }
