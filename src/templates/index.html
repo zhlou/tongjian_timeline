@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>资治通鉴</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar-tree">
+      <div class="panel-header">纪传</div>
+      <div id="tree-container"></div>
+    </aside>
+    <aside id="sidebar-timeline">
+      <div class="panel-header">公元</div>
+      <div id="century-jump">
+        <button id="century-prev" title="Previous century">◀</button>
+        <span id="century-label"></span>
+        <button id="century-next" title="Next century">▶</button>
+      </div>
+      <div id="timeline-container"></div>
+    </aside>
+    <main id="content">
+      <div id="search-bar">
+        <input type="text" id="search-input" placeholder="搜索 dynasty / era / year ...">
+        <div id="search-dropdown" class="hidden"></div>
+      </div>
+      <div id="content-scroll"></div>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

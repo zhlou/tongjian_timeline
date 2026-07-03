@@ -77,6 +77,7 @@ def build_indices():
     sections = {}
     volume_meta = {}
     section_order = []
+    section_labels = {}
     year_set = set()
 
     for f in files:
@@ -130,6 +131,15 @@ def build_indices():
                 "volume_time_cycle": volume_time_cycle,
             }
 
+            label_parts = []
+            if era_name:
+                label_parts.append(era_name)
+            if era_year:
+                label_parts.append(era_year)
+            if year:
+                label_parts.append(f"({year})")
+            section_labels[section_id] = " ".join(label_parts) if label_parts else section_id
+
     sorted_years = sorted(year_set, key=parse_year_num)
 
     western_timeline = []
@@ -156,6 +166,7 @@ def build_indices():
         "western_years": western_years,
         "western_timeline": western_timeline,
         "sections": sections,
+        "section_labels": section_labels,
         "volume_meta": volume_meta,
         "section_order": section_order,
     }

@@ -51,6 +51,7 @@ def api_indices():
         "western_timeline": _indices.get("western_timeline", []),
         "volume_meta": _indices.get("volume_meta", {}),
         "section_order": _indices.get("section_order", []),
+        "section_labels": _indices.get("section_labels", {}),
     })
 
 
