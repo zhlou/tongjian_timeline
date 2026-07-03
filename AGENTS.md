@@ -11,7 +11,15 @@ Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpu
 | `raw_json/` | Original JSON — Chinese text as `\uXXXX` escapes (294 files, one per page) |
 | `raw_json_converted/` | Same data with `\uXXXX` decoded to real Unicode, pretty-printed |
 | `semantic_json/` | Restructured: flat name/text pairs → grouped by year-section |
-| `scripts/` | Processing scripts |
+ | `scripts/` | Processing scripts |
+ | `src/` | Web app (Flask backend + frontend) |
+
+ ## Web app
+
+```bash
+python scripts/build_indices.py   # semantic_json → indices.json (must run first)
+python src/app.py                 # start web server at http://localhost:5000
+```
 
 ## Data structure quirk
 
@@ -30,12 +38,13 @@ Each `raw_json_converted/*.json` is a flat array of `[{name, text}]` blocks. The
 
 ## Scripts
 
-Run all from repo root (`/home/zhlou/Work/tongjian-timeline`):
+Run all from repo root:
 
 ```bash
 python scripts/convert_unicode.py    # raw_json → raw_json_converted
 python scripts/restructure_json.py   # raw_json_converted → semantic_json
 python scripts/verify_counts.py      # validate no texts were lost
+python scripts/build_indices.py     # semantic_json → indices.json (for web app)
 ```
 
 **Always verify** after restructuring:
@@ -43,7 +52,3 @@ python scripts/verify_counts.py      # validate no texts were lost
 python scripts/verify_counts.py
 ```
 Should report `OK: all 294 files match` with identical totals.
-
-## Edge case
-
-Some files (e.g. 153) have `main_text` entries without a preceding `time_era_name`/`time_era_year` block. The restructure script handles this by creating a section with empty `era_name`/`era_year`.
