@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+  <button id="mobile-tree-toggle" title="Toggle tree panel">☰</button>
   <div id="app">
     <aside id="sidebar-tree">
       <div class="panel-header">纪传</div>
@@ -26,7 +27,10 @@
         <input type="text" id="search-input" placeholder="搜索 dynasty / era / year ...">
         <div id="search-dropdown" class="hidden"></div>
       </div>
-      <div id="content-scroll"></div>
+      <div id="content-scroll">
+        <div id="loading-indicator" class="loading-indicator">Loading...</div>
+        <div id="progress-bar">Section 1 / 1405</div>
+      </div>
     </main>
   </div>
   <script src="/static/app.js"></script>

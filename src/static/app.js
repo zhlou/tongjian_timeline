@@ -19,6 +19,8 @@
   const $contentScroll = document.getElementById("content-scroll");
   const $searchInput = document.getElementById("search-input");
   const $searchDropdown = document.getElementById("search-dropdown");
+  const $progressBar = document.getElementById("progress-bar");
+  const $mobileToggle = document.getElementById("mobile-tree-toggle");
 
   /* ==================== State ==================== */
   const state = {
@@ -373,12 +375,33 @@
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
+  let _loadingCount = 0;
+  function showLoading() {
+    _loadingCount++;
+    if (_loadingCount === 1) {
+      const el = document.getElementById("loading-indicator");
+      if (el) el.style.display = "flex";
+    }
+  }
+  function hideLoading() {
+    _loadingCount = Math.max(0, _loadingCount - 1);
+    if (_loadingCount === 0) {
+      const el = document.getElementById("loading-indicator");
+      if (el) el.style.display = "none";
+    }
+  }
+
   async function loadSections(ids) {
     const missing = ids.filter(id => !state.sectionCache.has(id));
     if (missing.length === 0) return;
-    const batch = await fetchJSON("/api/sections/batch?ids=" + missing.join(","));
-    for (const [sid, data] of Object.entries(batch)) {
-      state.sectionCache.set(sid, data);
+    showLoading();
+    try {
+      const batch = await fetchJSON("/api/sections/batch?ids=" + missing.join(","));
+      for (const [sid, data] of Object.entries(batch)) {
+        state.sectionCache.set(sid, data);
+      }
+    } finally {
+      hideLoading();
     }
   }
 
@@ -504,7 +527,15 @@
     syncTimelineToSection(sid);
     history.replaceState(null, "", "#section=" + sid);
     updateActiveBlockClass();
+    updateProgressBar(sid);
     saveState();
+  }
+
+  function updateProgressBar(sid) {
+    const idx = state.sectionOrder.indexOf(sid);
+    if (idx >= 0) {
+      $progressBar.textContent = `Section ${idx + 1} / ${state.sectionOrder.length}`;
+    }
   }
 
   function updateActiveBlockClass() {
@@ -534,8 +565,14 @@
     leaf.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
-  function syncTimelineToSection(sid) {
-    const sec = state.sectionCache.get(sid);
+  async function syncTimelineToSection(sid) {
+    let sec = state.sectionCache.get(sid);
+    if (!sec || !sec.year) {
+      try {
+        sec = await fetchJSON("/api/section/" + sid);
+        state.sectionCache.set(sid, sec);
+      } catch (_) { return; }
+    }
     if (!sec || !sec.year) return;
 
     $timelineContainer.querySelectorAll(".timeline-year.active").forEach(y => y.classList.remove("active"));
@@ -698,6 +735,9 @@
           toggleTreeNode(node);
         }
         node.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        if (r.section_ids && r.section_ids.length > 0) {
+          navigateToSection(r.section_ids[0]);
+        }
       }
     }
   }
@@ -744,6 +784,22 @@
       }
     });
   }
+
+  /* ==================== Mobile toggle ==================== */
+  $mobileToggle.addEventListener("click", () => {
+    const tree = document.getElementById("sidebar-tree");
+    tree.classList.toggle("visible");
+  });
+
+  document.addEventListener("click", (ev) => {
+    const tree = document.getElementById("sidebar-tree");
+    if (tree.classList.contains("visible") &&
+        !tree.contains(ev.target) &&
+        ev.target !== $mobileToggle &&
+        !$mobileToggle.contains(ev.target)) {
+      tree.classList.remove("visible");
+    }
+  });
 
   /* ==================== Start ==================== */
   document.addEventListener("DOMContentLoaded", init);

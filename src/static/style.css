@@ -250,10 +250,11 @@ body {
   vertical-align: middle;
 }
 
-.badge-dynasty { background: #5b9bd5; }
-.badge-volume  { background: #70ad47; }
-.badge-era     { background: #ed7d31; }
-.badge-year    { background: #9b59b6; }
+.badge-dynasty   { background: #5b9bd5; }
+.badge-volume    { background: #70ad47; }
+.badge-era       { background: #ed7d31; }
+.badge-era_year  { background: #ffc000; color: #333; }
+.badge-year      { background: #9b59b6; }
 
 .search-result-label {
   vertical-align: middle;
@@ -301,13 +302,48 @@ body {
 }
 
 /* ---- loading / empty ---- */
-#loading-indicator {
-  display: flex;
+.loading-indicator {
+  display: none;
   justify-content: center;
   padding: 40px;
   color: #999;
   font-size: 14px;
 }
+
+/* ---- progress bar ---- */
+#progress-bar {
+  position: sticky;
+  top: 0;
+  right: 0;
+  float: right;
+  padding: 6px 16px;
+  font-size: 11px;
+  color: #aaa;
+  z-index: 5;
+  background: rgba(250, 250, 250, 0.85);
+  border-radius: 0 0 0 6px;
+  user-select: none;
+}
+
+/* ---- mobile toggle ---- */
+#mobile-tree-toggle {
+  display: none;
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  border: none;
+  background: #e8e8e8;
+  color: #333;
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+#mobile-tree-toggle:hover { background: #d0d0d0; }
 
 /* ---- responsive ---- */
 @media (max-width: 900px) {
@@ -317,5 +353,16 @@ body {
 
 @media (max-width: 600px) {
   #app { grid-template-columns: 1fr; }
-  #sidebar-tree { display: none; }
+  #sidebar-tree {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    z-index: 150;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  }
+  #sidebar-tree.visible { display: flex; }
+  #mobile-tree-toggle { display: block; }
 }
