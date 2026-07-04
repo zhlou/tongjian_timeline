@@ -1,5 +1,8 @@
 # AGENTS.md
 
+> When making changes to the project, always update both `AGENTS.md` and `README.md`
+> to reflect the current state.
+
 ## Repo overview
 
 Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpus.
@@ -13,8 +16,12 @@ Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpu
 | `semantic_json/` | Restructured: flat name/text pairs → grouped by year-section |
  | `scripts/` | Processing scripts |
  | `src/` | Web app (Flask backend + frontend) |
+| `Dockerfile` | Container build for deployment |
+| `.dockerignore` | Build-context exclusions |
 
  ## Web app
+
+### Local dev
 
 Requires Python venv with Flask:
 ```bash
@@ -25,6 +32,16 @@ uv venv && source .venv/bin/activate && uv pip install -r requirements.txt
 python scripts/build_indices.py   # semantic_json → indices.json (must run first)
 python src/app.py                 # start web server at http://localhost:5000
 ```
+
+### Docker
+
+```bash
+docker build -t tongjian-timeline .
+docker run -p 5000:5000 tongjian-timeline
+```
+
+Base: `python:3.12-slim` with gunicorn (4 workers) as the production WSGI server.
+Debug mode controlled via `FLASK_DEBUG` env var (default off).
 
 ## Data structure quirk
 

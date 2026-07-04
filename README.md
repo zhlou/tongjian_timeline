@@ -2,23 +2,30 @@
 
 Data-processing pipeline and interactive web browser for the Zizhi Tongjian historical text corpus.
 
-## Quick Start (Web App)
+## Quick Start
+
+### Docker (recommended)
+
+```bash
+git clone <repo>
+cd tongjian_timeline
+docker build -t tongjian-timeline .
+docker run -p 5000:5000 tongjian-timeline
+```
+
+Open **http://localhost:5000** in your browser.
+
+### Local dev
 
 ```bash
 git clone <repo>
 cd tongjian_timeline
 
-# Install Flask
 uv venv && source .venv/bin/activate && uv pip install -r requirements.txt
 
-# Build indices (required, generates indices.json)
-python scripts/build_indices.py
-
-# Start the server
-python src/app.py
+python scripts/build_indices.py   # generates indices.json (required)
+python src/app.py                 # start at http://localhost:5000
 ```
-
-Open **http://localhost:5000** in your browser.
 
 ## Directory Layout
 
@@ -30,6 +37,8 @@ Open **http://localhost:5000** in your browser.
 | `scripts/` | Processing and ETL scripts |
 | `src/` | Web app (Flask backend + templates + static) |
 | `work/` | Spec and implementation plan |
+| `Dockerfile` | Container build for deployment |
+| `.dockerignore` | Build-context exclusions |
 | `.venv/` | Python virtual environment (git-ignored) |
 
 ## Data Format
@@ -88,7 +97,7 @@ The web app supports browsing by:
 
 ## Tech Stack
 
-- **Backend**: Python 3.8+ / Flask
+- **Backend**: Python 3.12+ / Flask / gunicorn (production WSGI)
 - **Frontend**: Vanilla HTML, CSS, JavaScript (no frameworks)
 - **Data**: Pre-built JSON index (ETL from semantic JSON files)
 - **Package manager**: uv

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+raw_json/
+raw_json_converted/
+work/
+README.md
+AGENTS.md
+indices.json
