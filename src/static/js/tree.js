@@ -1,13 +1,19 @@
 "use strict";
 
-import { el, pulseElement } from "./utils.js";
+import { el, esc, pulseElement } from "./utils.js";
 import { $treeContainer } from "./dom.js";
 import { state, saveState } from "./state.js";
 import { navigateToSection } from "./navigation.js";
 import { hideTreeOverlay } from "./mobile.js";
 
+function rangeSpan(meta) {
+  if (!meta || !meta.year_range) return "";
+  return `<span class="tree-yr">${esc(meta.year_range)}</span>`;
+}
+
 export function buildTree() {
-  const { dynasties, volumes, eras, volume_meta, dynasty_order, volume_order } = state.indices;
+  const { dynasties, volumes, eras, volume_meta, dynasty_meta, era_meta,
+          dynasty_order, volume_order, leaf_meta } = state.indices;
 
   const dynastyVols = {};
   for (const [vol, ids] of Object.entries(volumes)) {
@@ -44,7 +50,7 @@ export function buildTree() {
     const dNode = el("div", "tree-node");
     dNode.dataset.type = "dynasty";
     dNode.dataset.key = d;
-    dNode.innerHTML = `<span class="tree-toggle">▶</span><span class="tree-label">${d}</span>`;
+    dNode.innerHTML = `<span class="tree-toggle">▶</span><span class="tree-label">${esc(d)}</span>${rangeSpan(dynasty_meta && dynasty_meta[d])}`;
     dNode.addEventListener("click", () => toggleTreeNode(dNode));
     dLi.appendChild(dNode);
 
@@ -55,7 +61,7 @@ export function buildTree() {
       const vNode = el("div", "tree-node");
       vNode.dataset.type = "volume";
       vNode.dataset.key = vol.name;
-      vNode.innerHTML = `<span class="tree-toggle">▶</span><span class="tree-label">${vol.name}</span>`;
+      vNode.innerHTML = `<span class="tree-toggle">▶</span><span class="tree-label">${esc(vol.name)}</span>${rangeSpan(volume_meta && volume_meta[vol.name])}`;
       vNode.addEventListener("click", () => toggleTreeNode(vNode));
       vLi.appendChild(vNode);
 
@@ -70,7 +76,7 @@ export function buildTree() {
           const eNode = el("div", "tree-node");
           eNode.dataset.type = "era";
           eNode.dataset.key = era;
-          eNode.innerHTML = `<span class="tree-toggle">▶</span><span class="tree-label">${era}</span>`;
+          eNode.innerHTML = `<span class="tree-toggle">▶</span><span class="tree-label">${esc(era)}</span>${rangeSpan(era_meta && era_meta[era])}`;
           eNode.addEventListener("click", () => toggleTreeNode(eNode));
           eLi.appendChild(eNode);
 
@@ -80,13 +86,16 @@ export function buildTree() {
           eraUl.appendChild(eLi);
         }
 
+        const secMeta = leaf_meta[sid] || {};
         const yLi = el("li");
         const yNode = el("div", "tree-node tree-leaf");
         yNode.dataset.type = "year";
         yNode.dataset.sectionId = sid;
-        yNode.dataset.year = state.indices.western_years[sid] || "";
-        const label = state.indices.section_labels[sid] || sid;
-        yNode.innerHTML = `<span class="tree-label">${label}</span>`;
+        yNode.innerHTML = `
+          <span class="tree-toggle"></span>
+          <span class="tree-label">${esc(secMeta.era_year || sid)}</span>
+          <span class="tree-gz">${esc(secMeta.ganzhi || "")}</span>
+          <span class="tree-yr">${esc(secMeta.year || "")}</span>`;
         yNode.addEventListener("click", (ev) => {
           ev.stopPropagation();
           if (document.getElementById("sidebar-tree").classList.contains("visible")) {
@@ -118,7 +127,12 @@ export function buildTree() {
     const node = ul.parentElement.querySelector(".tree-node");
     if (node) {
       const toggle = node.querySelector(".tree-toggle");
-      if (toggle) toggle.textContent = "▶";
+      if (toggle && toggle.textContent === "") {
+        toggle.textContent = "\u200B";
+        toggle.style.visibility = "hidden";
+      } else if (toggle) {
+        toggle.textContent = "▶";
+      }
     }
   }
 

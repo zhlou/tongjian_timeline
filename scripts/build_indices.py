@@ -3,13 +3,17 @@
 
 Produces a single JSON file containing:
   - dynasties:  dynasty_name -> [section_ids]
+  - dynasty_order: preserved insertion order
+  - dynasty_meta: dynasty_name -> {year_min, year_max, year_range}
   - volumes:    volume_name -> [section_ids]
+  - volume_order: preserved insertion order
+  - volume_meta: volume_name -> {time_cycle, file_index, dynasty, raw_volume_name, year_min, year_max, year_range}
   - eras:       era_name -> [section_ids]
+  - era_meta:   era_name -> {year_min, year_max, year_range}
   - era_years:  "{era_name}|{era_year}" -> section_id
   - western_years: "403 BC" -> section_id
-  - western_timeline: [{"century": "...", "years": [...]}]
-  - sections:   section_id -> {volume_name, dynasty, era_name, era_year, year, texts, volume_time_cycle}
-  - volume_meta: volume_name -> {time_cycle, file_index, dynasty, raw_volume_name}
+  - ganzhi_index: ganzhi -> [section_ids] (chronological)
+  - sections:   section_id -> {volume_name, dynasty, era_name, era_year, year, ganzhi, texts, volume_time_cycle}
   - section_order: [section_id, ...]
 """
 
@@ -20,13 +24,10 @@ from pathlib import Path
 SEM_DIR = "semantic_json"
 OUTPUT_FILE = "indices.json"
 
-
-def ordinal(n):
-    if 10 <= n % 100 <= 20:
-        suffix = "th"
-    else:
-        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
-    return f"{n}{suffix}"
+KNOWN_EMPTY_VOLUMES = {
+    "111": "【晋纪三十三】 ",
+    "140": "【齐纪六】 ",
+}
 
 
 def extract_dynasty(volume_name):
@@ -35,34 +36,38 @@ def extract_dynasty(volume_name):
     return m.group(1) if m else ""
 
 
-KNOWN_EMPTY_VOLUMES = {
-    "111": "【晋纪三十三】 ",
-    "140": "【齐纪六】 ",
-}
-
-
 def fix_volume_name(file_index, raw_name):
     if file_index in KNOWN_EMPTY_VOLUMES and (not raw_name or raw_name.replace("\u3010", "").replace("\u3011", "").strip() == ""):
         return KNOWN_EMPTY_VOLUMES[file_index]
     return raw_name
 
 
+def format_year(n):
+    return f"{abs(n)} BC" if n < 0 else f"{n} AD"
+
+
 def parse_year_num(year_str):
-    m = re.match(r"(\d+)\s+(BC|AD)", year_str)
+    m = re.match(r"(\d+)\s+(BC|AD)", year_str or "")
     if m:
         n = int(m.group(1))
         return -n if m.group(2) == "BC" else n
     return 0
 
 
-def century_label(year_str):
-    m = re.match(r"(\d+)\s+(BC|AD)", year_str)
-    if not m:
-        return None
-    n = int(m.group(1))
-    era = m.group(2)
-    c = (n - 1) // 100 + 1
-    return f"{ordinal(c)} Century {era}"
+def year_int(year_str):
+    return parse_year_num(year_str) if year_str else 0
+
+
+def range_for(sids, sections):
+    ints = []
+    for sid in sids:
+        y = year_int(sections[sid].get("year", ""))
+        if y != 0:
+            ints.append(y)
+    if not ints:
+        return None, None, ""
+    lo, hi = min(ints), max(ints)
+    return lo, hi, f"{format_year(lo)} \u2013 {format_year(hi)}"
 
 
 def build_indices():
@@ -76,11 +81,14 @@ def build_indices():
     eras = {}
     era_years = {}
     western_years = {}
+    ganzhi_index = {}
     sections = {}
+    leaf_meta = {}
     volume_meta = {}
+    dynasty_meta = {}
+    era_meta = {}
     section_order = []
     section_labels = {}
-    year_set = set()
 
     for f in files:
         file_index = f.stem
@@ -99,12 +107,13 @@ def build_indices():
             dynasties[dynasty] = []
             dynasty_order.append(dynasty)
 
-        volume_meta[cleaned_name] = {
-            "time_cycle": volume_time_cycle,
-            "file_index": file_index,
-            "dynasty": dynasty,
-            "raw_volume_name": raw_volume_name,
-        }
+        if cleaned_name not in volume_meta:
+            volume_meta[cleaned_name] = {
+                "time_cycle": volume_time_cycle,
+                "file_index": file_index,
+                "dynasty": dynasty,
+                "raw_volume_name": raw_volume_name,
+            }
 
         for si, section in enumerate(data.get("sections", [])):
             section_id = f"{file_index}-{si}"
@@ -112,7 +121,8 @@ def build_indices():
 
             era_name = section.get("era_name", "")
             era_year = section.get("era_year", "")
-            year = section.get("year", "")
+            ganzhi = section.get("ganzhi") or ""
+            year = section.get("year", "") or ""
             texts = section.get("texts", [])
 
             dynasties[dynasty].append(section_id)
@@ -125,16 +135,28 @@ def build_indices():
 
             if year:
                 western_years[year] = section_id
-                year_set.add(year)
+
+            if ganzhi:
+                ganzhi_index.setdefault(ganzhi, []).append(section_id)
 
             sections[section_id] = {
                 "volume_name": cleaned_name,
                 "dynasty": dynasty,
                 "era_name": era_name,
                 "era_year": era_year,
+                "ganzhi": ganzhi,
                 "year": year,
                 "texts": texts,
                 "volume_time_cycle": volume_time_cycle,
+            }
+
+            leaf_meta[section_id] = {
+                "volume_name": cleaned_name,
+                "dynasty": dynasty,
+                "era_name": era_name,
+                "era_year": era_year,
+                "ganzhi": ganzhi,
+                "year": year,
             }
 
             label_parts = []
@@ -142,40 +164,45 @@ def build_indices():
                 label_parts.append(era_name)
             if era_year:
                 label_parts.append(era_year)
-            if year:
-                label_parts.append(f"({year})")
             section_labels[section_id] = " ".join(label_parts) if label_parts else section_id
 
-    sorted_years = sorted(year_set, key=parse_year_num)
+    for vol_name, sids in volumes.items():
+        lo, hi, rng = range_for(sids, sections)
+        volume_meta[vol_name]["year_min"] = lo
+        volume_meta[vol_name]["year_max"] = hi
+        volume_meta[vol_name]["year_range"] = rng
 
-    western_timeline = []
-    current_century = None
-    century_years = []
+    for dy_name, sids in dynasties.items():
+        lo, hi, rng = range_for(sids, sections)
+        dynasty_meta[dy_name] = {
+            "year_min": lo,
+            "year_max": hi,
+            "year_range": rng,
+        }
 
-    for y in sorted_years:
-        cl = century_label(y)
-        if cl != current_century:
-            if current_century is not None:
-                western_timeline.append({"century": current_century, "years": century_years})
-            current_century = cl
-            century_years = []
-        century_years.append(y)
-
-    if current_century is not None:
-        western_timeline.append({"century": current_century, "years": century_years})
+    for era_name, sids in eras.items():
+        lo, hi, rng = range_for(sids, sections)
+        era_meta[era_name] = {
+            "year_min": lo,
+            "year_max": hi,
+            "year_range": rng,
+        }
 
     indices = {
         "dynasties": dynasties,
         "dynasty_order": dynasty_order,
+        "dynasty_meta": dynasty_meta,
         "volumes": volumes,
         "volume_order": volume_order,
+        "volume_meta": volume_meta,
         "eras": eras,
+        "era_meta": era_meta,
         "era_years": era_years,
         "western_years": western_years,
-        "western_timeline": western_timeline,
-        "sections": sections,
-        "section_labels": section_labels,
-        "volume_meta": volume_meta,
+        "ganzhi_index": ganzhi_index,
+            "sections": sections,
+            "leaf_meta": leaf_meta,
+            "section_labels": section_labels,
         "section_order": section_order,
     }
 
@@ -185,12 +212,12 @@ def build_indices():
 
     print(f"Files processed:  {len(files)}")
     print(f"Sections:        {len(section_order)}")
-    print(f"Dynasties:       {len(dynasties)} ({', '.join(sorted(dynasties))})")
+    print(f"Dynasties:       {len(dynasties)} ({', '.join(dynasty_order)})")
     print(f"Volumes:         {len(volumes)}")
     print(f"Eras:            {len(eras)}")
     print(f"Era+Year keys:   {len(era_years)}")
-    print(f"Western years:   {len(sorted_years)} ({sorted_years[0]} to {sorted_years[-1]})")
-    print(f"Centuries:       {len(western_timeline)} ({western_timeline[0]['century']} to {western_timeline[-1]['century']})")
+    print(f"Western years:   {len(western_years)}")
+    print(f"Ganzhi tokens:   {len(ganzhi_index)}")
     print(f"Output written to {OUTPUT_FILE}")
 
 

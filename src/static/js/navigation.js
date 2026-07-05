@@ -4,7 +4,6 @@ import { state, saveState, mobileScroll, scrollEl } from "./state.js";
 import { $contentScroll, $progressBar } from "./dom.js";
 import { pulseElement } from "./utils.js";
 import { syncTreeToSection } from "./tree.js";
-import { syncTimelineToSection } from "./timeline.js";
 import { renderBlockRange, prependBlockRange, getRenderedRange } from "./content.js";
 
 export function findTopSectionId() {
@@ -46,7 +45,6 @@ export function setActiveSection(sid) {
   if (sid === state.activeSectionId) return;
   state.activeSectionId = sid;
   syncTreeToSection(sid);
-  syncTimelineToSection(sid);
   history.replaceState(null, "", "#section=" + sid);
   updateActiveBlockClass();
   updateProgressBar(sid);

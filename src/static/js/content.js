@@ -13,7 +13,10 @@ export function renderSectionBlock(sid, opts) {
   if (opts && opts.fadeIn) block.classList.add("faded-in");
 
   const header = el("div", "section-header");
-  header.innerHTML = `<span class="vol">${esc(sec.volume_name)}</span>  ·  <span class="era">${esc(sec.era_name)} ${esc(sec.era_year)}</span>  <span class="wyr">(${esc(sec.year)})</span>`;
+  header.innerHTML = `<span class="vol">${esc(sec.volume_name)}</span>` +
+    `<span class="era">${esc(sec.era_name)} ${esc(sec.era_year)}</span>` +
+    (sec.ganzhi ? `<span class="gz">${esc(sec.ganzhi)}</span>` : "") +
+    (sec.year   ? `<span class="yr">(${esc(sec.year)})</span>`   : "");
   block.appendChild(header);
 
   const textsDiv = el("div", "section-texts");

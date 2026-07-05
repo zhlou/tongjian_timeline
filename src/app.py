@@ -31,6 +31,7 @@ _volumes = _indices.get("volumes", {}) if _indices else {}
 _eras = _indices.get("eras", {}) if _indices else {}
 _era_years = _indices.get("era_years", {}) if _indices else {}
 _western_years = _indices.get("western_years", {}) if _indices else {}
+_ganzhi_index = _indices.get("ganzhi_index", {}) if _indices else {}
 
 
 @_app.route("/")
@@ -45,15 +46,18 @@ def api_indices():
     return jsonify({
         "dynasties": {k: list(v) for k, v in _dynasties.items()},
         "dynasty_order": _indices.get("dynasty_order", []),
+        "dynasty_meta": _indices.get("dynasty_meta", {}),
         "volumes": {k: list(v) for k, v in _volumes.items()},
         "volume_order": _indices.get("volume_order", []),
+        "volume_meta": _indices.get("volume_meta", {}),
         "eras": {k: list(v) for k, v in _eras.items()},
+        "era_meta": _indices.get("era_meta", {}),
         "era_years": _era_years,
         "western_years": _western_years,
-        "western_timeline": _indices.get("western_timeline", []),
-        "volume_meta": _indices.get("volume_meta", {}),
+        "ganzhi_index": {k: list(v) for k, v in _ganzhi_index.items()},
         "section_order": _indices.get("section_order", []),
         "section_labels": _indices.get("section_labels", {}),
+        "leaf_meta": _indices.get("leaf_meta", {}),
     })
 
 
@@ -133,6 +137,18 @@ def api_search():
                 "label": f"{year_str} — {section.get('era_name', '')} {section.get('era_year', '')}",
                 "sort": 0 if year_str == q else 1,
             })
+
+    for ganzhi, sids in _ganzhi_index.items():
+        if q in ganzhi:
+            for sid in sids:
+                section = _sections.get(sid, {})
+                results.append({
+                    "type": "ganzhi",
+                    "section_id": sid,
+                    "ganzhi": ganzhi,
+                    "label": f"{ganzhi} · {section.get('era_name','')} {section.get('era_year','')} ({section.get('year','')})",
+                    "sort": 0 if ganzhi == q else 1,
+                })
 
     results.sort(key=lambda r: (r["sort"], r["label"]))
     return jsonify(results[:20])

@@ -58,7 +58,7 @@ async function doSearch(q) {
 }
 
 function handleSearchResult(r) {
-  if (r.type === "era_year" || r.type === "year") {
+  if (r.type === "era_year" || r.type === "year" || r.type === "ganzhi") {
     navigateToSection(r.section_id);
   } else if (r.type === "dynasty") {
     const name = r.id.slice("dynasty:".length);

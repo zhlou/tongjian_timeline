@@ -3,7 +3,6 @@
 import { fetchJSON } from "./utils.js";
 import { state, restoreState } from "./state.js";
 import { buildTree } from "./tree.js";
-import { buildTimeline, setupCenturyJump } from "./timeline.js";
 import { navigateToSection, setupObserver, setupScrollPrefetch } from "./navigation.js";
 import { setupSearch } from "./search.js";
 import { setupKeyboard } from "./keyboard.js";
@@ -13,11 +12,8 @@ async function init() {
   restoreState();
   state.indices = await fetchJSON("/api/indices");
   state.sectionOrder = state.indices.section_order;
-  state.centuryOrder = state.indices.western_timeline.map(c => c.century);
 
   buildTree();
-  buildTimeline();
-  setupCenturyJump();
   setupMobileToggle();
 
   let startId = state.activeSectionId;

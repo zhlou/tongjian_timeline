@@ -14,21 +14,18 @@ export const state = {
   indices: null,
   activeSectionId: null,
   expandedNodes: new Set(),
-  expandedCenturies: new Set(),
   sectionCache: new Map(),
   sectionOrder: [],
-  centuryOrder: [],
   renderedIds: new Set(),
   syncPending: false,
 };
 
-export const SESSION_KEY = "ztj_state";
+export const SESSION_KEY = "ztj_state_v2";
 
 export function saveState() {
   try {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify({
       expandedNodes: [...state.expandedNodes],
-      expandedCenturies: [...state.expandedCenturies],
       activeSectionId: state.activeSectionId,
     }));
   } catch (_) {}
@@ -40,7 +37,6 @@ export function restoreState() {
     if (!raw) return;
     const saved = JSON.parse(raw);
     if (saved.expandedNodes) state.expandedNodes = new Set(saved.expandedNodes);
-    if (saved.expandedCenturies) state.expandedCenturies = new Set(saved.expandedCenturies);
     if (saved.activeSectionId) state.activeSectionId = saved.activeSectionId;
   } catch (_) {}
 }
