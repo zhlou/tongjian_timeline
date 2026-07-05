@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <button id="mobile-tree-toggle" title="Toggle tree panel">☰</button>
+  <div id="tree-backdrop"></div>
   <div id="app">
     <aside id="sidebar-tree">
       <div class="panel-header">纪传</div>
@@ -24,6 +24,7 @@
     </aside>
     <main id="content">
       <div id="search-bar">
+        <button id="mobile-tree-toggle" title="Toggle tree panel">☰</button>
         <input type="text" id="search-input" placeholder="搜索 dynasty / era / year ...">
         <div id="search-dropdown" class="hidden"></div>
       </div>

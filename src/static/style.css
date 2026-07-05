@@ -327,27 +327,41 @@ body {
 /* ---- mobile toggle ---- */
 #mobile-tree-toggle {
   display: none;
-  position: fixed;
-  top: 8px;
-  left: 8px;
-  z-index: 200;
   border: none;
   background: #e8e8e8;
   color: #333;
   font-size: 18px;
-  width: 36px;
-  height: 36px;
   border-radius: 4px;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  z-index: 200;
 }
 
 #mobile-tree-toggle:hover { background: #d0d0d0; }
+
+/* ---- tree backdrop ---- */
+#tree-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 140;
+}
+#tree-backdrop.visible {
+  display: block;
+}
 
 /* ---- responsive ---- */
 @media (max-width: 900px) {
   #app { grid-template-columns: 220px 1fr; }
   #sidebar-timeline { display: none; }
+
+  .tree-node { padding: 8px 10px; }
+  .tree-node.active { padding-left: 7px; }
+  #century-jump button { padding: 6px 10px; font-size: 13px; }
+
+  .section-header { padding: 20px 20px 10px; }
+  .section-texts { padding: 4px 20px 20px; }
+  .section-block.active-section .section-header { padding-left: 17px; }
 }
 
 @media (max-width: 600px) {
@@ -358,10 +372,45 @@ body {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 260px;
+    width: 280px;
     z-index: 150;
     box-shadow: 2px 0 8px rgba(0,0,0,0.15);
   }
   #sidebar-tree.visible { display: flex; }
-  #mobile-tree-toggle { display: block; }
+  #mobile-tree-toggle { display: block; width: 40px; height: auto; flex-shrink: 0; }
+
+  .section-header { padding: 16px 12px 8px; font-size: 13px; }
+  .section-texts { padding: 4px 12px 16px; }
+  .section-texts p {
+    font-size: 15px;
+    line-height: 2;
+    overflow-wrap: break-word;
+  }
+  .section-block.active-section .section-header { padding-left: 9px; }
+
+  #progress-bar {
+    float: none;
+    text-align: right;
+    padding: 4px 12px;
+    font-size: 10px;
+  }
+
+  #search-bar {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    padding: 8px;
+  }
+  #search-input { flex: 1; padding: 12px; font-size: 16px; }
+  #search-dropdown {
+    left: 8px;
+    right: 8px;
+    max-height: 60vh;
+  }
+  .search-result { padding: 12px 12px; font-size: 14px; }
+}
+
+@media (min-width: 768px) and (orientation: landscape) {
+  #app { grid-template-columns: 220px 140px 1fr; }
+  #sidebar-timeline { display: flex; }
 }

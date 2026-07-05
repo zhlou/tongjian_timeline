@@ -21,6 +21,7 @@
   const $searchDropdown = document.getElementById("search-dropdown");
   const $progressBar = document.getElementById("progress-bar");
   const $mobileToggle = document.getElementById("mobile-tree-toggle");
+  const $treeBackdrop = document.getElementById("tree-backdrop");
 
   /* ==================== State ==================== */
   const state = {
@@ -185,6 +186,9 @@
           yNode.innerHTML = `<span class="tree-label">${label}</span>`;
           yNode.addEventListener("click", (ev) => {
             ev.stopPropagation();
+            if (document.getElementById("sidebar-tree").classList.contains("visible")) {
+              hideTreeOverlay();
+            }
             navigateToSection(sid);
           });
 
@@ -840,9 +844,27 @@
   }
 
   /* ==================== Mobile toggle ==================== */
+  function showTreeOverlay() {
+    document.getElementById("sidebar-tree").classList.add("visible");
+    $treeBackdrop.classList.add("visible");
+  }
+
+  function hideTreeOverlay() {
+    document.getElementById("sidebar-tree").classList.remove("visible");
+    $treeBackdrop.classList.remove("visible");
+  }
+
   $mobileToggle.addEventListener("click", () => {
     const tree = document.getElementById("sidebar-tree");
-    tree.classList.toggle("visible");
+    if (tree.classList.contains("visible")) {
+      hideTreeOverlay();
+    } else {
+      showTreeOverlay();
+    }
+  });
+
+  $treeBackdrop.addEventListener("click", () => {
+    hideTreeOverlay();
   });
 
   document.addEventListener("click", (ev) => {
@@ -851,7 +873,7 @@
         !tree.contains(ev.target) &&
         ev.target !== $mobileToggle &&
         !$mobileToggle.contains(ev.target)) {
-      tree.classList.remove("visible");
+      hideTreeOverlay();
     }
   });
 
