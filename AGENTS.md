@@ -124,16 +124,24 @@ The parenthetical in `time_era_year` is parsed in the same pass that builds each
 Run all from repo root:
 
 ```bash
-python scripts/convert_unicode.py    # raw_json → raw_json_converted
-python scripts/restructure_json.py    # raw_json_converted → semantic_json (with year + ganzhi)
-python scripts/verify_counts.py       # validate no texts were lost
-python scripts/build_indices.py       # semantic_json → indices.json (for web app)
+python scripts/convert_unicode.py      # raw_json → raw_json_converted
+python scripts/restructure_json.py     # raw_json_converted → semantic_json (with year + ganzhi, fixes stale era_name)
+python scripts/verify_counts.py        # validate no texts were lost
+python scripts/build_indices.py        # semantic_json → indices.json (for web app)
 ```
 
 `scripts/add_year_field.py` is **deprecated** — kept as a helper library for legacy callers. Running it standalone prints a deprecation notice and exits unless invoked with `--apply`.
 
+**Validation helpers:**
+
+| Script | Purpose |
+|---|---|
+| `detect_era_anomalies.py` | Find sections where `era_year` decreases under same `era_name` (should return 0) |
+| `find_missing_era.py` | Find sections with empty `era_name` or `era_year` |
+| `count_year_sections.py` | Tally year-sections per file |
+
 **Always verify** after restructuring:
 ```bash
-python scripts/verify_counts.py
+python scripts/verify_counts.py        # expect 41 files with 45 total stripped (ruler names promoted to era_name)
+python scripts/detect_era_anomalies.py # expect 0 issues
 ```
-Should report `OK: all 294 files match` with identical totals.

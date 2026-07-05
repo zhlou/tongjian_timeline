@@ -32,12 +32,11 @@
       "year": "402 BC",
       "texts": [
         "王崩，子安王骄立。",
-        "盗杀楚声王，国人立其子悼王。",
-        "安王"
+        "盗杀楚声王，国人立其子悼王。"
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "元年",
       "ganzhi": "庚辰",
       "year": "401 BC",
@@ -46,7 +45,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "二年",
       "ganzhi": "辛巳",
       "year": "400 BC",
@@ -59,7 +58,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "三年",
       "ganzhi": "壬午",
       "year": "399 BC",
@@ -69,7 +68,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "四年",
       "ganzhi": "癸未",
       "year": "398 BC",
@@ -78,7 +77,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "五年",
       "ganzhi": "甲申",
       "year": "397 BC",
@@ -88,7 +87,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "六年",
       "ganzhi": "乙酉",
       "year": "396 BC",
@@ -98,7 +97,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "八年",
       "ganzhi": "丁亥",
       "year": "394 BC",
@@ -108,7 +107,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "九年",
       "ganzhi": "戊子",
       "year": "393 BC",
@@ -118,7 +117,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "十一年",
       "ganzhi": "庚寅",
       "year": "391 BC",
@@ -128,7 +127,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "十二年",
       "ganzhi": "辛卯",
       "year": "390 BC",
@@ -139,7 +138,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "十三年",
       "ganzhi": "壬辰",
       "year": "389 BC",
@@ -149,7 +148,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "十五年",
       "ganzhi": "甲午",
       "year": "387 BC",
@@ -163,7 +162,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "十六年",
       "ganzhi": "乙未",
       "year": "386 BC",
@@ -173,7 +172,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "十七年",
       "ganzhi": "丙申",
       "year": "385 BC",
@@ -185,7 +184,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "十九年",
       "ganzhi": "戊戌",
       "year": "383 BC",
@@ -194,7 +193,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "二十年",
       "ganzhi": "己亥",
       "year": "382 BC",
@@ -203,7 +202,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "二十一年",
       "ganzhi": "庚子",
       "year": "381 BC",
@@ -212,7 +211,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "二十二年",
       "ganzhi": "辛丑",
       "year": "380 BC",
@@ -221,7 +220,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "二十三年",
       "ganzhi": "壬寅",
       "year": "379 BC",
@@ -232,7 +231,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "二十四年",
       "ganzhi": "癸卯",
       "year": "378 BC",
@@ -243,7 +242,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "二十五年",
       "ganzhi": "甲辰",
       "year": "377 BC",
@@ -255,17 +254,16 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "安王",
       "era_year": "二十六年",
       "ganzhi": "乙巳",
       "year": "376 BC",
       "texts": [
-        "王崩，子烈王喜立。魏、韩、赵共废晋靖公为家人而分其地。",
-        "烈王"
+        "王崩，子烈王喜立。魏、韩、赵共废晋靖公为家人而分其地。"
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "烈王",
       "era_year": "元年",
       "ganzhi": "丙午",
       "year": "375 BC",
@@ -276,7 +274,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "烈王",
       "era_year": "三年",
       "ganzhi": "戊申",
       "year": "373 BC",
@@ -290,7 +288,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "烈王",
       "era_year": "四年",
       "ganzhi": "己酉",
       "year": "372 BC",
@@ -300,7 +298,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "烈王",
       "era_year": "五年",
       "ganzhi": "庚戌",
       "year": "371 BC",
@@ -311,7 +309,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "烈王",
       "era_year": "六年",
       "ganzhi": "辛亥",
       "year": "370 BC",
@@ -325,7 +323,7 @@
       ]
     },
     {
-      "era_name": "威烈王",
+      "era_name": "烈王",
       "era_year": "七年",
       "ganzhi": "壬子",
       "year": "369 BC",

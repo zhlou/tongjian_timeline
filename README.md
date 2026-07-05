@@ -68,8 +68,8 @@ Run all from repo root with Python 3.8+:
 
 ```bash
 python scripts/convert_unicode.py     # raw_json → raw_json_converted
-python scripts/restructure_json.py    # raw_json_converted → semantic_json (with year + ganzhi)
-python scripts/verify_counts.py       # validate no texts were lost
+python scripts/restructure_json.py    # raw_json_converted → semantic_json (with year + ganzhi, fixes stale era_name)
+python scripts/verify_counts.py       # validate no texts were lost (expects 41 files × 1-2 stripped ruler-name texts)
 python scripts/build_indices.py      # semantic_json → indices.json (web app)
 ```
 

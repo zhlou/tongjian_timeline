@@ -72,6 +72,20 @@ def extract_era_year_fields(raw):
     return stripped, parse_ganzhi(inner), parse_western(inner)
 
 
+_RULER_KW = {"\u738b", "\u5e1d", "\u7687", "\u540e", "\u5b97", "\u7956"}  # 王帝皇后宗祖
+_SENTENCE_PUNCT = {"\u3002", "\uff0c", "\u3001", "\uff1b", "\uff1a", "\uff1f", "\uff01"}  # 。，、；：？！
+
+
+def _is_ruler_name(text):
+    if not (2 <= len(text) <= 8):
+        return False
+    if not any(kw in text for kw in _RULER_KW):
+        return False
+    if any(p in text for p in _SENTENCE_PUNCT):
+        return False
+    return True
+
+
 def group_blocks(blocks):
     volume = {}
     sections = []
@@ -82,6 +96,7 @@ def group_blocks(blocks):
     state_ganzhi = None
     state_year_str = None
     state_texts = []
+    pending_era_name = None
 
     def flush():
         nonlocal state_name, state_year_raw, state_year, state_ganzhi
@@ -101,7 +116,7 @@ def group_blocks(blocks):
         state_year_str = None
         state_texts = []
 
-    for block in blocks:
+    for i, block in enumerate(blocks):
         names = {obj["name"] for obj in block}
         if "vol_name" in names:
             for obj in block:
@@ -113,12 +128,22 @@ def group_blocks(blocks):
             flush()
             for obj in block:
                 if obj["name"] == "time_era_name":
-                    state_name = obj["text"]
+                    if pending_era_name:
+                        state_name = pending_era_name
+                    else:
+                        state_name = obj["text"]
                 elif obj["name"] == "time_era_year":
                     state_year_raw = obj["text"]
                     state_year, state_ganzhi, state_year_str = extract_era_year_fields(state_year_raw)
         elif "main_text" in names:
-            state_texts.append(block[0]["text"])
+            text = block[0]["text"]
+            if (len(block) == 1 and _is_ruler_name(text)
+                    and i + 1 < len(blocks)
+                    and "time_era_name" in {obj["name"] for obj in blocks[i + 1]}):
+                flush()
+                pending_era_name = text
+            else:
+                state_texts.append(text)
 
     flush()
     return {
