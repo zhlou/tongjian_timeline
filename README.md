@@ -95,6 +95,10 @@ The web app supports browsing by:
 - **Era + year** (年号+年): e.g. 威烈王二十三年
 - **Western year** (公元): e.g. 403 BC, 529 AD
 
+### Navigation
+
+Section jumps are instant — clicking a tree leaf, timeline year, or pressing `j/k/↑/↓` snaps directly to the target and pulses a brief yellow highlight (~800ms) on the active content block, tree leaf, and timeline year. Far jumps that need to re-render blocks fade in the new content (~250ms) to mask the loading state.
+
 ## Tech Stack
 
 - **Backend**: Python 3.12+ / Flask / gunicorn (production WSGI)

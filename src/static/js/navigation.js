@@ -2,6 +2,7 @@
 
 import { state, saveState, mobileScroll, scrollEl } from "./state.js";
 import { $contentScroll, $progressBar } from "./dom.js";
+import { pulseElement } from "./utils.js";
 import { syncTreeToSection } from "./tree.js";
 import { syncTimelineToSection } from "./timeline.js";
 import { renderBlockRange, prependBlockRange, getRenderedRange } from "./content.js";
@@ -74,15 +75,9 @@ function _onNavScroll() {
   }, 200);
 }
 
-export async function navigateToSection(sid, smooth) {
-  if (smooth === undefined) smooth = true;
-
+export async function navigateToSection(sid, _smooth) {
   const idx = state.sectionOrder.indexOf(sid);
   if (idx < 0) return;
-
-  const currentFi = state.activeSectionId ? parseInt(state.activeSectionId.split("-")[0], 10) : -1;
-  const targetFi = parseInt(sid.split("-")[0], 10);
-  const useSmoothScroll = smooth && Math.abs(targetFi - currentFi) <= 1;
 
   state.syncPending = true;
   clearTimeout(state._navTimeout);
@@ -92,10 +87,11 @@ export async function navigateToSection(sid, smooth) {
   const end = Math.min(state.sectionOrder.length - 1, idx + 10);
 
   const existing = $contentScroll.querySelector(`.section-block[data-section-id="${sid}"]`);
-  if (!existing) {
+  const rebuilt = !existing;
+  if (rebuilt) {
     $contentScroll.innerHTML = "";
     state.renderedIds.clear();
-    await renderBlockRange(start, end);
+    await renderBlockRange(start, end, { fadeIn: true });
   }
 
   setActiveSection(sid);
@@ -105,22 +101,15 @@ export async function navigateToSection(sid, smooth) {
     if (mobileScroll()) {
       const searchH = document.getElementById("search-bar").getBoundingClientRect().height;
       const y = block.getBoundingClientRect().top + window.scrollY - searchH;
-      window.scrollTo({ top: y, behavior: useSmoothScroll ? "smooth" : "instant" });
+      window.scrollTo({ top: y, behavior: "instant" });
     } else {
-      block.scrollIntoView({ block: "start", behavior: useSmoothScroll ? "smooth" : "instant" });
+      block.scrollIntoView({ block: "start", behavior: "instant" });
     }
+    pulseElement(block);
   }
 
-  if (useSmoothScroll) {
-    scrollEl().addEventListener("scroll", _onNavScroll, { passive: true });
-    _onNavScroll();
-    state._navTimeout = setTimeout(() => {
-      state.syncPending = false;
-      scrollEl().removeEventListener("scroll", _onNavScroll);
-    }, 5000);
-  } else {
-    state._navTimeout = setTimeout(() => { state.syncPending = false; }, 200);
-  }
+  scrollEl().addEventListener("scroll", _onNavScroll, { passive: true });
+  _onNavScroll();
 
   saveState();
 }

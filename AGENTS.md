@@ -32,13 +32,23 @@ Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpu
 | `tree.js` | Dynasty/volume/era/year tree: build, toggle, expand/collapse, sync-to-section |
 | `timeline.js` | Western-year timeline: build, century jump, year highlight, sync-to-section |
 | `content.js` | Section blocks: batch load, DOM render, virtual-scroll prepend/append, recycling |
-| `navigation.js` | Nav, scroll-observer, active-section detection, prefetch, progress bar |
+| `navigation.js` | Nav, scroll-observer, active-section detection, prefetch, progress bar, instant-jump + WAAPI pulse |
 | `search.js` | Debounced typeahead search with dropdown |
 | `keyboard.js` | `/`, Escape, j/k, ArrowUp/Down shortcuts |
 | `mobile.js` | Off-canvas tree overlay, backdrop, outside-click dismiss |
 | `main.js` | `init()` orchestrator, `DOMContentLoaded` entry point |
 
 One intentional circular import: `tree.js` ↔ `navigation.js` (navigate-to-section in year click handlers vs sync-tree-to-section in active-section detection). ES module live bindings resolve this at call time.
+
+### Navigation feedback
+
+Section jumps use **instant** scroll (no auto-scroll). The newly-active block is highlighted with an 800ms yellow-flash + orange inset border-ring via `pulseElement()` (`utils.js`) — Web Animations API, cancels any in-flight animation on the same element and starts a fresh one, so the flash fires reliably on every jump (close, far, initial load, rapid `j`/`k` repeats). The active tree leaf and timeline year pulse the same way.
+
+Replacing the previous smooth-scroll was needed because the browser's default smooth animation could overrun 5s for large jumps inside the virtualized container; that was the source of the mid-scroll `state.syncPending` watchdog timeout.
+
+When `navigateToSection` triggers a full re-render (target outside the ±10 rendered window), newly built blocks additionally get the `.faded-in` class for a brief 250ms opacity fade-in, covering the blank-flash during the `/api/sections/batch` fetch.
+
+Smooth scroll is still used for the sidepanel auto-alignment (tree leaf, timeline year, search dropdown rows) where the user is visually tracking a small element.
 
 ## Web app
 

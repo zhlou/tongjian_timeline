@@ -307,6 +307,27 @@ body {
   padding-left: 29px;
 }
 
+/* ---- navigation feedback (replaces removed auto-scroll) ---- */
+/* Pulse animation runs in JS via Web Animations API (utils.js pulseElement).
+ * Cancelling the in-flight Animation and starting a fresh one guarantees
+ * the flash on every navigation, including close jumps and rapid repeats. */
+
+@keyframes just-navigated-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.section-block.faded-in {
+  animation: just-navigated-fade-in 250ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-block.faded-in {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 /* ---- loading / empty ---- */
 .loading-indicator {
   display: none;

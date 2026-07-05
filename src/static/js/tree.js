@@ -1,6 +1,6 @@
 "use strict";
 
-import { el } from "./utils.js";
+import { el, pulseElement } from "./utils.js";
 import { $treeContainer } from "./dom.js";
 import { state, saveState } from "./state.js";
 import { navigateToSection } from "./navigation.js";
@@ -201,6 +201,8 @@ export function syncTreeToSection(sid) {
     parent = parent.parentElement?.closest("li");
   }
   expandTreeToNode(path);
+
+  pulseElement(leaf);
 
   leaf.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }

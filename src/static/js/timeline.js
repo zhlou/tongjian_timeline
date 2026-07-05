@@ -1,6 +1,6 @@
 "use strict";
 
-import { el, fetchJSON } from "./utils.js";
+import { el, fetchJSON, pulseElement } from "./utils.js";
 import { $timelineContainer, $centuryLabel, $centuryPrev, $centuryNext } from "./dom.js";
 import { state, saveState } from "./state.js";
 import { navigateToSection } from "./navigation.js";
@@ -116,6 +116,7 @@ export async function syncTimelineToSection(sid) {
       }
       const ci = parseInt(centuryDiv.dataset.centuryIdx, 10);
       updateCenturyJump(ci);
+      pulseElement(yrEl);
       yrEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }

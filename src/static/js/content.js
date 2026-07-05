@@ -4,12 +4,13 @@ import { el, esc, fetchJSON, showLoading, hideLoading } from "./utils.js";
 import { $contentScroll } from "./dom.js";
 import { state } from "./state.js";
 
-export function renderSectionBlock(sid) {
+export function renderSectionBlock(sid, opts) {
   const sec = state.sectionCache.get(sid);
   if (!sec) return null;
 
   const block = el("div", "section-block");
   block.dataset.sectionId = sid;
+  if (opts && opts.fadeIn) block.classList.add("faded-in");
 
   const header = el("div", "section-header");
   header.innerHTML = `<span class="vol">${esc(sec.volume_name)}</span>  ·  <span class="era">${esc(sec.era_name)} ${esc(sec.era_year)}</span>  <span class="wyr">(${esc(sec.year)})</span>`;
@@ -51,7 +52,7 @@ export function getRenderedRange() {
   };
 }
 
-export async function renderBlockRange(startIdx, endIdx) {
+export async function renderBlockRange(startIdx, endIdx, opts) {
   const ids = [];
   for (let i = startIdx; i <= endIdx; i++) {
     const id = state.sectionOrder[i];
@@ -64,7 +65,7 @@ export async function renderBlockRange(startIdx, endIdx) {
   for (let i = startIdx; i <= endIdx; i++) {
     const id = state.sectionOrder[i];
     if (state.renderedIds.has(id)) continue;
-    const block = renderSectionBlock(id);
+    const block = renderSectionBlock(id, opts);
     if (!block) continue;
     state.renderedIds.add(id);
     $contentScroll.appendChild(block);
