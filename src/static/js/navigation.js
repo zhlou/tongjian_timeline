@@ -104,6 +104,10 @@ export async function navigateToSection(sid, _smooth) {
       block.scrollIntoView({ block: "start", behavior: "instant" });
     }
     pulseElement(block);
+    const header = block.querySelector(".section-header");
+    if (header) pulseElement(header);
+    const banner = block.querySelector(".volume-banner");
+    if (banner) pulseElement(banner);
   }
 
   scrollEl().addEventListener("scroll", _onNavScroll, { passive: true });

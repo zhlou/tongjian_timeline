@@ -26,8 +26,10 @@ export function renderSectionBlock(sid, opts) {
   header.innerHTML =
     `<span class="vol">${esc(sec.volume_name)}</span>` +
     `<span class="era">${esc(sec.era_name)} ${esc(sec.era_year)}</span>` +
-    (sec.ganzhi ? `<span class="gz">${esc(sec.ganzhi)}</span>` : "") +
-    (sec.year   ? `<span class="yr">(${esc(sec.year)})</span>`   : "");
+    `<span class="header-meta">` +
+      (sec.ganzhi ? `<span class="gz">${esc(sec.ganzhi)}</span>` : "") +
+      (sec.year   ? `<span class="yr">(${esc(sec.year)})</span>`   : "") +
+    `</span>`;
   block.appendChild(header);
 
   const textsDiv = el("div", "section-texts");

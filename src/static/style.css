@@ -248,20 +248,33 @@ body {
 }
 
 .section-header {
-  padding: 20px 32px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fafafa;
+  padding: 8px 32px;
   border-top: 1px solid #e0e0e0;
   color: #888;
   font-size: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
 }
 
 .section-block:first-child .section-header { border-top: none; }
 
-.volume-banner + .section-header { border-top: none; }
+.volume-banner + .section-header { border-top: 1px solid #e0e0e0; }
 
 .section-header .vol { color: #555; }
-.section-header .era { color: #333; font-weight: 600; margin-left: 8px; }
-.section-header .gz  { color: #888; margin-left: 10px; font-size: 13px; }
-.section-header .yr  { color: #aaa; margin-left: 8px;  font-size: 13px; }
+.section-header .era { color: #333; font-weight: 600; margin-left: 4px; }
+.section-header .header-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.section-header .gz  { color: #888; font-size: 13px; }
+.section-header .yr  { color: #aaa; font-size: 13px; }
 
 .section-texts { padding: 4px 32px 20px; }
 
@@ -353,7 +366,7 @@ body {
   .tree-node { padding: 8px 10px; }
   .tree-node.active { padding-left: 7px; }
 
-  .section-header { padding: 20px 20px 10px; }
+  .section-header { padding: 20px 20px 8px; }
   .section-texts { padding: 4px 20px 20px; }
   .section-block.active-section .section-header { padding-left: 17px; }
   .volume-banner { padding: 16px 20px 12px; }
