@@ -672,7 +672,13 @@
 
     const block = $contentScroll.querySelector(`.section-block[data-section-id="${sid}"]`);
     if (block) {
-      block.scrollIntoView({ block: "start", behavior: useSmoothScroll ? "smooth" : "instant" });
+      if (mobileScroll()) {
+        const searchH = document.getElementById("search-bar").getBoundingClientRect().height;
+        const y = block.getBoundingClientRect().top + window.scrollY - searchH;
+        window.scrollTo({ top: y, behavior: useSmoothScroll ? "smooth" : "instant" });
+      } else {
+        block.scrollIntoView({ block: "start", behavior: useSmoothScroll ? "smooth" : "instant" });
+      }
     }
 
     if (useSmoothScroll) {
