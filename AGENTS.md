@@ -43,6 +43,11 @@ docker run -p 5000:5000 tongjian-timeline
 Base: `python:3.12-slim` with gunicorn (4 workers) as the production WSGI server.
 Debug mode controlled via `FLASK_DEBUG` env var (default off).
 
+Responsive breakpoints in `src/static/style.css`:
+- ≤900px: 2-column (220px tree + content), timeline hidden
+- ≤600px: single-column, slimmer padding (12px), tree off-canvas overlay
+- ≥768px landscape: 3-column with 140px timeline restored
+
 ## Data structure quirk
 
 Each `raw_json_converted/*.json` is a flat array of `[{name, text}]` blocks. The flow is:
