@@ -221,6 +221,7 @@ body {
 
 .section-block {
   padding: 0;
+  overflow: visible;
 }
 
 .section-block:first-child { border-top: none; }
@@ -249,6 +250,7 @@ body {
 
 .section-header {
   position: sticky;
+  position: -webkit-sticky;
   top: 0;
   z-index: 10;
   background: #fafafa;
@@ -259,6 +261,7 @@ body {
   display: flex;
   align-items: baseline;
   gap: 4px;
+  will-change: transform;
 }
 
 .section-block:first-child .section-header { border-top: none; }
@@ -414,7 +417,11 @@ body {
   #sidebar-tree.visible { display: flex; }
   #mobile-tree-toggle { display: block; width: 40px; height: auto; flex-shrink: 0; }
 
-  .section-header { padding: 16px 12px 8px; font-size: 13px; }
+  .section-header {
+    padding: 16px 12px 8px;
+    font-size: 13px;
+    top: calc(env(safe-area-inset-top) + 52px);
+  }
   .section-texts { padding: 4px 12px 16px; }
   .section-texts p {
     font-size: 15px;
