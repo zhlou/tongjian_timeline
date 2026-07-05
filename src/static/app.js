@@ -24,6 +24,14 @@
   const $treeBackdrop = document.getElementById("tree-backdrop");
 
   /* ==================== State ==================== */
+  function mobileScroll() {
+    return window.innerWidth <= 600;
+  }
+
+  function scrollEl() {
+    return mobileScroll() ? document : $contentScroll;
+  }
+
   const state = {
     indices: null,
     activeSectionId: null,
@@ -504,7 +512,7 @@
   function findTopSectionId() {
     const blocks = $contentScroll.querySelectorAll(".section-block");
     if (blocks.length === 0) return null;
-    const rootTop = $contentScroll.getBoundingClientRect().top;
+    const rootTop = mobileScroll() ? 0 : $contentScroll.getBoundingClientRect().top;
     let best = null;
     for (const b of blocks) {
       const top = b.getBoundingClientRect().top;
@@ -527,7 +535,7 @@
 
   function setupObserver() {
     let scrollCheckTimer = null;
-    $contentScroll.addEventListener("scroll", () => {
+    scrollEl().addEventListener("scroll", () => {
       if (scrollCheckTimer) return;
       scrollCheckTimer = requestAnimationFrame(() => {
         scrollCheckTimer = null;
@@ -632,7 +640,7 @@
     clearTimeout(state._navTimeout);
     state._navTimeout = setTimeout(() => {
       state.syncPending = false;
-      $contentScroll.removeEventListener("scroll", _onNavScroll);
+      scrollEl().removeEventListener("scroll", _onNavScroll);
     }, 200);
   }
 
@@ -648,7 +656,7 @@
 
     state.syncPending = true;
     clearTimeout(state._navTimeout);
-    $contentScroll.removeEventListener("scroll", _onNavScroll);
+    scrollEl().removeEventListener("scroll", _onNavScroll);
 
     const start = Math.max(0, idx - 10);
     const end = Math.min(state.sectionOrder.length - 1, idx + 10);
@@ -668,11 +676,11 @@
     }
 
     if (useSmoothScroll) {
-      $contentScroll.addEventListener("scroll", _onNavScroll, { passive: true });
+      scrollEl().addEventListener("scroll", _onNavScroll, { passive: true });
       _onNavScroll();
       state._navTimeout = setTimeout(() => {
         state.syncPending = false;
-        $contentScroll.removeEventListener("scroll", _onNavScroll);
+        scrollEl().removeEventListener("scroll", _onNavScroll);
       }, 5000);
     } else {
       state._navTimeout = setTimeout(() => { state.syncPending = false; }, 200);
@@ -683,7 +691,7 @@
 
   function setupScrollPrefetch() {
     let prefetchTimer = null;
-    $contentScroll.addEventListener("scroll", () => {
+    scrollEl().addEventListener("scroll", () => {
       if (prefetchTimer) return;
       prefetchTimer = setTimeout(() => {
         prefetchTimer = null;
@@ -691,9 +699,10 @@
         const range = getRenderedRange();
         if (range.start < 0) return;
 
-        const scrollTop = $contentScroll.scrollTop;
-        const scrollBottom = scrollTop + $contentScroll.clientHeight;
-        const contentHeight = $contentScroll.scrollHeight;
+        const target = mobileScroll() ? document.documentElement : $contentScroll;
+        const scrollTop = target.scrollTop;
+        const scrollBottom = scrollTop + target.clientHeight;
+        const contentHeight = target.scrollHeight;
 
         if (scrollBottom > contentHeight - 2000 && range.end < state.sectionOrder.length - 1) {
           const nextEnd = Math.min(state.sectionOrder.length - 1, range.end + 10);
