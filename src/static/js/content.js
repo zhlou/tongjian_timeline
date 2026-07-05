@@ -12,8 +12,19 @@ export function renderSectionBlock(sid, opts) {
   block.dataset.sectionId = sid;
   if (opts && opts.fadeIn) block.classList.add("faded-in");
 
+  if (sec.is_volume_start) {
+    const banner = el("div", "volume-banner");
+    banner.innerHTML =
+      `<span class="vol-name">${esc(sec.volume_name)}</span>` +
+      (sec.volume_time_cycle
+        ? `<span class="vol-cycle">${esc(sec.volume_time_cycle)}</span>`
+        : "");
+    block.appendChild(banner);
+  }
+
   const header = el("div", "section-header");
-  header.innerHTML = `<span class="vol">${esc(sec.volume_name)}</span>` +
+  header.innerHTML =
+    `<span class="vol">${esc(sec.volume_name)}</span>` +
     `<span class="era">${esc(sec.era_name)} ${esc(sec.era_year)}</span>` +
     (sec.ganzhi ? `<span class="gz">${esc(sec.ganzhi)}</span>` : "") +
     (sec.year   ? `<span class="yr">(${esc(sec.year)})</span>`   : "");

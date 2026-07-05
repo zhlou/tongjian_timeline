@@ -225,6 +225,28 @@ body {
 
 .section-block:first-child { border-top: none; }
 
+.volume-banner {
+  padding: 16px 32px 12px;
+  margin-bottom: 0;
+  border-bottom: 1px solid #bbb;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.volume-banner .vol-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.volume-banner .vol-cycle {
+  font-size: 0.82rem;
+  color: #888;
+}
+
 .section-header {
   padding: 20px 32px 10px;
   border-top: 1px solid #e0e0e0;
@@ -233,6 +255,8 @@ body {
 }
 
 .section-block:first-child .section-header { border-top: none; }
+
+.volume-banner + .section-header { border-top: none; }
 
 .section-header .vol { color: #555; }
 .section-header .era { color: #333; font-weight: 600; margin-left: 8px; }
@@ -332,6 +356,7 @@ body {
   .section-header { padding: 20px 20px 10px; }
   .section-texts { padding: 4px 20px 20px; }
   .section-block.active-section .section-header { padding-left: 17px; }
+  .volume-banner { padding: 16px 20px 12px; }
 }
 
 @media (max-width: 600px) {
@@ -384,6 +409,7 @@ body {
     overflow-wrap: break-word;
   }
   .section-block.active-section .section-header { padding-left: 9px; }
+  .volume-banner { padding: 12px 12px 8px; font-size: 13px; }
 
   #progress-bar {
     position: static;

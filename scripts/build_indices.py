@@ -24,22 +24,10 @@ from pathlib import Path
 SEM_DIR = "semantic_json"
 OUTPUT_FILE = "indices.json"
 
-KNOWN_EMPTY_VOLUMES = {
-    "111": "【晋纪三十三】 ",
-    "140": "【齐纪六】 ",
-}
-
 
 def extract_dynasty(volume_name):
-    name = volume_name.replace("\u3010", "").replace("\u3011", "").strip()
-    m = re.match(r"^(.+?)纪", name)
+    m = re.match(r"^(.+?)纪", volume_name)
     return m.group(1) if m else ""
-
-
-def fix_volume_name(file_index, raw_name):
-    if file_index in KNOWN_EMPTY_VOLUMES and (not raw_name or raw_name.replace("\u3010", "").replace("\u3011", "").strip() == ""):
-        return KNOWN_EMPTY_VOLUMES[file_index]
-    return raw_name
 
 
 def format_year(n):
@@ -95,24 +83,22 @@ def build_indices():
         with open(f, "r", encoding="utf-8") as fh:
             data = json.load(fh)
 
-        raw_volume_name = fix_volume_name(file_index, data.get("volume_name", ""))
+        volume_name = data.get("volume_name", "")
         volume_time_cycle = data.get("volume_time_cycle", "")
-        dynasty = extract_dynasty(raw_volume_name)
-        cleaned_name = raw_volume_name.replace("\u3010", "").replace("\u3011", "").strip()
+        dynasty = extract_dynasty(volume_name)
 
-        if cleaned_name not in volumes:
-            volumes[cleaned_name] = []
-            volume_order.append(cleaned_name)
+        if volume_name not in volumes:
+            volumes[volume_name] = []
+            volume_order.append(volume_name)
         if dynasty not in dynasties:
             dynasties[dynasty] = []
             dynasty_order.append(dynasty)
 
-        if cleaned_name not in volume_meta:
-            volume_meta[cleaned_name] = {
+        if volume_name not in volume_meta:
+            volume_meta[volume_name] = {
                 "time_cycle": volume_time_cycle,
                 "file_index": file_index,
                 "dynasty": dynasty,
-                "raw_volume_name": raw_volume_name,
             }
 
         for si, section in enumerate(data.get("sections", [])):
@@ -126,7 +112,7 @@ def build_indices():
             texts = section.get("texts", [])
 
             dynasties[dynasty].append(section_id)
-            volumes[cleaned_name].append(section_id)
+            volumes[volume_name].append(section_id)
             eras.setdefault(era_name, []).append(section_id)
 
             if era_name and era_year:
@@ -140,7 +126,7 @@ def build_indices():
                 ganzhi_index.setdefault(ganzhi, []).append(section_id)
 
             sections[section_id] = {
-                "volume_name": cleaned_name,
+                "volume_name": volume_name,
                 "dynasty": dynasty,
                 "era_name": era_name,
                 "era_year": era_year,
@@ -148,10 +134,11 @@ def build_indices():
                 "year": year,
                 "texts": texts,
                 "volume_time_cycle": volume_time_cycle,
+                "is_volume_start": si == 0,
             }
 
             leaf_meta[section_id] = {
-                "volume_name": cleaned_name,
+                "volume_name": volume_name,
                 "dynasty": dynasty,
                 "era_name": era_name,
                 "era_year": era_year,

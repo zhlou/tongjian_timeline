@@ -13,7 +13,7 @@ Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpu
 |---|---|
 | `raw_json/` | Original JSON — Chinese text as `\uXXXX` escapes (294 files, one per page) |
 | `raw_json_converted/` | Same data with `\uXXXX` decoded to real Unicode, pretty-printed |
-| `semantic_json/` | Restructured: flat name/text pairs → grouped by year-section, with `era_name`, `era_year` (paren-stripped), `ganzhi`, `year`, `texts` |
+| `semantic_json/` | Restructured: flat name/text pairs → grouped by year-section, with `era_name`, `era_year` (paren-stripped), `ganzhi`, `year`, `texts`. `volume_name` is bracket-stripped; `volume_time_cycle` has encoding corruptions fixed (`]` → `黓`, etc.). |
 | `scripts/` | Processing scripts |
 | `src/` | Web app (Flask backend + frontend) |
 | `src/static/js/` | Frontend ES modules (10 files, no build step) |
@@ -30,7 +30,7 @@ Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpu
 | `state.js` | Global mutable `state` object, session persistence, viewport helpers |
 | `utils.js` | `el()`, `esc()`, `fetchJSON()`, loading indicator, CSS.escape polyfill, pulseElement |
 | `tree.js` | Dynasty/volume/era/year tree: build with inline ganzhi + Western year on each leaf, year-range badges on higher-level nodes, toggle, expand/collapse, sync-to-section |
-| `content.js` | Section blocks: batch load, DOM render, virtual-scroll prepend/append, recycling; section header is `volume · era · ganzhi · (year)` |
+| `content.js` | Section blocks: batch load, DOM render, virtual-scroll prepend/append, recycling; volume banner (name + time_cycle) on `is_volume_start` sections; section header is `era · ganzhi · (year)` |
 | `navigation.js` | Nav, scroll-observer, active-section detection, prefetch, progress bar, instant-jump + WAAPI pulse |
 | `search.js` | Debounced typeahead search with dropdown (dynasty/volume/era/era_year/year/ganzhi types) |
 | `keyboard.js` | `/`, Escape, j/k, ArrowUp/Down shortcuts |
@@ -104,7 +104,7 @@ Each `raw_json_converted/*.json` is a flat array of `[{name, text}]` blocks. The
 ```json
 {
   "volume_name": "周纪一",
-  "volume_time_cycle": "起著雍摄提格…",
+  "volume_time_cycle": "起著雍摄提格，尽玄黓困敦，凡三十五年。",
   "sections": [
     {
       "era_name": "威烈王",
@@ -116,6 +116,10 @@ Each `raw_json_converted/*.json` is a flat array of `[{name, text}]` blocks. The
   ]
 }
 ```
+
+`restructure_json.py` also cleans up `volume_name` (strips `【】` brackets) and `volume_time_cycle` (fixes encoding corruptions: `]` → `黓`, `∷` → `涒`, etc.). Files 111 and 140 have their `◎`-merged volume name + time cycle split back out.
+
+`scripts/build_indices.py` adds `is_volume_start: true` to the first section of each volume. The first section of each volume renders a volume banner (name + time_cycle) in the frontend.
 
 The parenthetical in `time_era_year` is parsed in the same pass that builds each section; both ganzhi and Western year become top-level fields. The remaining `era_year` value is the cleaned-up text without the parenthetical (e.g. just `"二十三年"`).
 

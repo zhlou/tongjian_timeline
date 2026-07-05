@@ -2,8 +2,8 @@
 """Convert flat name/text JSON into semantic year-section grouped JSON.
 
 Also extracts ganzhi (天干地支) and Western year from the parenthetical in
-``era_year`` and strips the parenthetical. Runs the parse step that the
-older ``add_year_field.py`` used to do as a post-pass.
+``era_year`` and strips the parenthetical, plus cleans up volume_name and
+volume_time_cycle (strips brackets, fixes encoding corruptions).
 """
 
 import json
@@ -20,6 +20,32 @@ CN_DIGITS = {
 }
 
 _RE_PAREN = re.compile(r"[\uff08(](.+)[\uff09)]\u5e74?$")
+
+# Encoding corruptions in volume_time_cycle mapped to correct characters.
+TIME_CYCLE_FIXES = {
+    "]": "\u9ed3",                # ASCII ]  → 黓  (玄黓, celestial stem for 壬)
+    "\u2237": "\u6d92",           # ∷       → 涒  (涒滩, earthly branch for 申)
+    "\u3108\u7a1a\u8f8f": "",    # ㄈ稚辏   → (delete, stray corruption in file 152)
+    "\u7600\u9022": "\u960f\u9022",   # 瘀逢 (file 016, 061) → 阏逢 (甲 stem)
+    "\u6691\u7ef4": "\u5c60\u7ef4",   # 暑维 (file 050) → 屠维 (己 stem)
+    "\u5f3a\u56f4": "\u5f3a\u5709",   # 强围 (file 068) → 强圉 (丁 stem)
+    "\u5f3a\u56fe": "\u5f3a\u5709",   # 强图 (file 110) → 强圉
+    "\u5f3a\u960f": "\u5f3a\u5709",   # 强阏 (files 050, 169) → 强圉
+    "\u76ee\u7ae0": "\u4e0a\u7ae0",   # 目章 (file 013) → 上章 (庚 stem)
+    "\u65c3\u8499\u5355\u7600": "\u65c3\u8499\u5355\u960f",  # 旃蒙单瘀 (file 290)
+    "\u8d64\u5907\u82e5": "\u8d64\u594b\u82e5",  # 赤备若 → 赤奋若 (丑 branch)
+    "\u592a\u6e0a\u732e": "\u5927\u6e0a\u732e",  # 太渊献 → 大渊献 (亥 branch)
+    "\u8d75\u67d4\u5146": "\u8d77\u67d4\u5146",  # 赵柔兆 → 起柔兆 (file 138)
+    "\u8da3\u662d\u9633": "\u8d77\u662d\u9633",  # 趣昭阳 → 起昭阳 (file 201)
+}
+
+# Characters unlikely to appear in sane volume_time_cycle; warn on any match.
+WARN_CHARS = re.compile(r"[^\u4e00-\u9fff\uff0c\u3001\u3002\uff1a\u300a\u300b"
+                        r"\uff08\uff09\u2014\u4e00\u2014\u4e5d\uff0e\u5e74 "
+                        r"\u201c\u201d\u00b7\.]")
+
+_RE_BRACKETS = re.compile(r"[\u3010\u3011]")
+_RE_DOT_PREFIX = re.compile(r"^\u25ce")  # ◎ prefix on merged vol_name+time_cycle
 
 
 def parse_cn_num(cn_str):
@@ -84,6 +110,22 @@ def _is_ruler_name(text):
     if any(p in text for p in _SENTENCE_PUNCT):
         return False
     return True
+
+
+def clean_volume_name(raw):
+    return _RE_BRACKETS.sub("", raw).strip()
+
+
+def clean_volume_time_cycle(raw, file_index):
+    result = raw
+    for bad, good in TIME_CYCLE_FIXES.items():
+        result = result.replace(bad, good)
+
+    stray = WARN_CHARS.findall(result)
+    if stray:
+        print(f"WARNING [{file_index}]: stray chars in volume_time_cycle: {set(stray)}")
+
+    return result
 
 
 def group_blocks(blocks):
@@ -154,9 +196,24 @@ def group_blocks(blocks):
 
 
 def convert_file(filepath, out_dir):
+    file_index = os.path.splitext(os.path.basename(filepath))[0]
     with open(filepath, "r", encoding="utf-8") as f:
         data = json.load(f)
     grouped = group_blocks(data)
+
+    grouped["volume_name"] = clean_volume_name(grouped.get("volume_name", ""))
+
+    cycle = grouped.get("volume_time_cycle", "")
+    if cycle.startswith("\u25ce"):
+        idx = cycle.find("\u8d77")
+        if idx > 0:
+            grouped["volume_name"] = cycle[1:idx]
+            cycle = cycle[idx:]
+        else:
+            cycle = cycle
+
+    grouped["volume_time_cycle"] = clean_volume_time_cycle(cycle, file_index)
+
     out_path = os.path.join(out_dir, os.path.basename(filepath))
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(grouped, f, ensure_ascii=False, indent=2)
