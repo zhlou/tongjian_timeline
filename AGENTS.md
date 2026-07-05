@@ -16,10 +16,31 @@ Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpu
 | `semantic_json/` | Restructured: flat name/text pairs → grouped by year-section |
  | `scripts/` | Processing scripts |
  | `src/` | Web app (Flask backend + frontend) |
+| `src/static/js/` | Frontend ES modules (11 files, no build step) |
 | `Dockerfile` | Container build for deployment |
 | `.dockerignore` | Build-context exclusions |
 
- ## Web app
+## Frontend modules
+
+`src/static/js/` — vanilla ES modules, no build step. Entry: `main.js`.
+
+| Module | Purpose |
+|---|---|
+| `dom.js` | `document.getElementById()` refs for all `$`-prefixed elements |
+| `state.js` | Global mutable `state` object, session persistence, viewport helpers |
+| `utils.js` | `el()`, `esc()`, `fetchJSON()`, loading indicator, CSS.escape polyfill |
+| `tree.js` | Dynasty/volume/era/year tree: build, toggle, expand/collapse, sync-to-section |
+| `timeline.js` | Western-year timeline: build, century jump, year highlight, sync-to-section |
+| `content.js` | Section blocks: batch load, DOM render, virtual-scroll prepend/append, recycling |
+| `navigation.js` | Nav, scroll-observer, active-section detection, prefetch, progress bar |
+| `search.js` | Debounced typeahead search with dropdown |
+| `keyboard.js` | `/`, Escape, j/k, ArrowUp/Down shortcuts |
+| `mobile.js` | Off-canvas tree overlay, backdrop, outside-click dismiss |
+| `main.js` | `init()` orchestrator, `DOMContentLoaded` entry point |
+
+One intentional circular import: `tree.js` ↔ `navigation.js` (navigate-to-section in year click handlers vs sync-tree-to-section in active-section detection). ES module live bindings resolve this at call time.
+
+## Web app
 
 ### Local dev
 

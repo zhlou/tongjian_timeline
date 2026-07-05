@@ -98,6 +98,6 @@ The web app supports browsing by:
 ## Tech Stack
 
 - **Backend**: Python 3.12+ / Flask / gunicorn (production WSGI)
-- **Frontend**: Vanilla HTML, CSS, JavaScript (no frameworks)
+- **Frontend**: Vanilla HTML, CSS, JavaScript (ES modules, no build step, no frameworks)
 - **Data**: Pre-built JSON index (ETL from semantic JSON files)
 - **Package manager**: uv
