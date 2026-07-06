@@ -50,6 +50,36 @@
       text-indent: 2em;
     }
 
+    .features {
+      text-align: left;
+      margin-bottom: 36px;
+    }
+
+    .features h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #444;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .feature-icon {
+      flex-shrink: 0;
+      font-size: 1rem;
+      color: #5b9bd5;
+      margin-top: 1px;
+    }
+
     .stats {
       display: flex;
       justify-content: center;
@@ -114,6 +144,18 @@
       全书上起周威烈王二十三年（公元前 403 年），下迄后周世宗显德六年（公元 959 年），
       涵盖十六个朝代、一千三百六十二年的历史。宋神宗以其「鉴于往事，有资于治道」，赐名《资治通鉴》。
     </p>
+
+    <div class="features">
+      <h2>项目特点</h2>
+      <div class="feature-item">
+        <span class="feature-icon">▸</span>
+        <span>以朝代、卷、年号、年份四级树形结构组织全文，可逐级展开浏览，亦可使用搜索栏按关键字快速定位。</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">▸</span>
+        <span>对原始文本进行了大规模校正，修复了约九千八百处因编码转换导致的乱码与形近讹误，使文本恢复到接近原貌。</span>
+      </div>
+    </div>
 
     {% if stats %}
     <div class="stats">
