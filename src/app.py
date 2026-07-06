@@ -34,8 +34,28 @@ _western_years = _indices.get("western_years", {}) if _indices else {}
 _ganzhi_index = _indices.get("ganzhi_index", {}) if _indices else {}
 
 
+def _homepage_stats():
+    if _indices is None:
+        return None
+    sections = _indices.get("section_order", [])
+    first_year = _sections.get(sections[0], {}).get("year", "?") if sections else "?"
+    last_year = _sections.get(sections[-1], {}).get("year", "?") if sections else "?"
+    return {
+        "num_dynasties": len(_indices.get("dynasty_order", [])),
+        "num_volumes": len(_indices.get("volume_order", [])),
+        "num_sections": len(sections),
+        "first_year": first_year,
+        "last_year": last_year,
+    }
+
+
 @_app.route("/")
 def index():
+    return render_template("home.html", stats=_homepage_stats())
+
+
+@_app.route("/read")
+def reader():
     return render_template("index.html")
 
 

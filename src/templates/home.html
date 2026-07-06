@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>资治通鉴 · 全文阅读</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Noto Serif SC", serif;
+      color: #333;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 24px;
+    }
+
+    .home-container {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: #222;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #999;
+      margin-bottom: 28px;
+    }
+
+    .intro {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: #555;
+      margin-bottom: 36px;
+      text-align: justify;
+      text-indent: 2em;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #444;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
+    .enter-btn {
+      display: inline-block;
+      padding: 12px 40px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      background: #5b9bd5;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .enter-btn:hover { background: #4a8ac4; }
+
+    .footer {
+      margin-top: 48px;
+      font-size: 0.8rem;
+      color: #bbb;
+    }
+
+    @media (max-width: 600px) {
+      .title { font-size: 2rem; }
+      .intro { font-size: 0.95rem; }
+      .stats { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="home-container">
+    <h1 class="title">资治通鉴</h1>
+    <p class="subtitle">全文在线阅读</p>
+
+    <p class="intro">
+      《资治通鉴》是北宋史学家司马光主编的一部编年体通史，共二百九十四卷，历时十九年完成。
+      全书上起周威烈王二十三年（公元前 403 年），下迄后周世宗显德六年（公元 959 年），
+      涵盖十六个朝代、一千三百六十二年的历史。宋神宗以其「鉴于往事，有资于治道」，赐名《资治通鉴》。
+    </p>
+
+    {% if stats %}
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value">{{ stats.num_dynasties }}</div>
+        <div class="stat-label">朝代</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ stats.num_volumes }}</div>
+        <div class="stat-label">卷</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ stats.num_sections }}</div>
+        <div class="stat-label">年份条目</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ stats.first_year }} – {{ stats.last_year }}</div>
+        <div class="stat-label">时间跨度</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <a href="/read" class="enter-btn">开始阅读</a>
+
+    <p class="footer">数据来源 · 国学网</p>
+  </div>
+</body>
+</html>
