@@ -136,6 +136,29 @@ python scripts/build_indices.py        # semantic_json → indices.json (for web
 
 `scripts/add_year_field.py` is **deprecated** — kept as a helper library for legacy callers. Running it standalone prints a deprecation notice and exits unless invoked with `--apply`.
 
+### Text correction
+
+`scripts/correct_text.py` fixes ~9,800 ASCII and moji-bake corruptions in `raw_json_converted/` by aligning against the Kanripo KR2b0007 reference (Siku Quanshu edition). The bulk of the corruption comes from GBK trail bytes in ASCII range (0x40–0x7E) that survived when lead bytes were lost (e.g. `T` → `蜹`, `p` → `朱泚`).
+
+```bash
+# Clone reference once:
+git clone https://github.com/kanripo/KR2b0007.git /tmp/reference_kanripo
+
+# Correct all 294 volumes:
+python scripts/correct_text.py
+
+# After correction, regenerate and re-run pipeline:
+python scripts/restructure_json.py
+python scripts/build_indices.py
+```
+
+Options:
+- `--dry-run` / `-n` : report without modifying
+- `--review` / `-r` : show auto-fix + CJK mismatch review items
+- `--volume N` : single volume only
+
+The reference goes to `/tmp/reference_kanripo` by default; override with env var `REF_DIR`. A backup is created in `raw_json_converted_backup/`.
+
 **Validation helpers:**
 
 | Script | Purpose |
