@@ -89,8 +89,7 @@ The Flask backend serves a single-page app with multi-index browsing.
 
 The web app supports browsing by:
 
-- **Dynasty** (朝代): 周, 汉, 唐, 宋, 晋, 梁, 齐, 魏, 秦, 陈, 隋
-- **Later Dynasties** (后代): 后周, 后唐, 后晋, 后梁, 后汉
+- **Dynasty** (朝代): 周, 秦, 汉, 魏, 晋, 宋, 齐, 梁, 陈, 隋, 唐, 后梁, 后唐, 后晋, 后汉, 后周
 - **Volume** (卷): e.g. 周纪一, 汉纪四十二
 - **Era name** (年号): e.g. 威烈王, 显王
 - **Era + year** (年号+年): e.g. 威烈王二十三年
