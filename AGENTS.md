@@ -12,7 +12,7 @@ Data-processing pipeline for 资治通鉴 (Zizhi Tongjian) historical text corpu
 | Dir | Purpose |
 |---|---|
 | `raw_json/` | Original JSON — Chinese text as `\uXXXX` escapes (294 files, one per page) |
-| `raw_json_converted/` | Same data with `\uXXXX` decoded to real Unicode, pretty-printed |
+| `raw_json_converted/` | **Source of truth** — Unicode-decoded, bracket-stripped, encoding-corrected, with moji-bake fixes baked in. `raw_json/` is kept as provenance archive only. |
 | `semantic_json/` | Restructured: flat name/text pairs → grouped by year-section, with `era_name`, `era_year` (paren-stripped), `ganzhi`, `year`, `texts`. `volume_name` is bracket-stripped; `volume_time_cycle` has encoding corruptions fixed (`]` → `黓`, etc.). |
 | `scripts/` | Processing scripts |
 | `src/` | Web app (Flask backend + frontend) |
@@ -117,7 +117,7 @@ Each `raw_json_converted/*.json` is a flat array of `[{name, text}]` blocks. The
 }
 ```
 
-`restructure_json.py` also cleans up `volume_name` (strips `【】` brackets) and `volume_time_cycle` (fixes encoding corruptions: `]` → `黓`, `∷` → `涒`, etc.). Files 111 and 140 have their `◎`-merged volume name + time cycle split back out.
+`restructure_json.py` also extracts ganzhi and Western year from `era_year` (paren-stripped). `volume_name` and `volume_time_cycle` corrections (brackets, encoding fixes, `◎`-merge splits) are now baked into `raw_json_converted/` via `fix_raw_converted.py`.
 
 `scripts/build_indices.py` adds `is_volume_start: true` to the first section of each volume. The first section of each volume renders a volume banner (name + time_cycle) in the frontend.
 
@@ -129,9 +129,11 @@ Run all from repo root:
 
 ```bash
 python scripts/convert_unicode.py      # raw_json → raw_json_converted
-python scripts/restructure_json.py     # raw_json_converted → semantic_json (with year + ganzhi, fixes stale era_name)
-python scripts/verify_counts.py        # validate no texts were lost
-python scripts/build_indices.py        # semantic_json → indices.json (for web app)
+python scripts/fix_raw_converted.py     # bake vol_name/time_cycle corrections in-place
+python scripts/correct_text.py          # fix ~9,800 ASCII/moji-bake via Kanripo reference
+python scripts/restructure_json.py      # raw_json_converted → semantic_json
+python scripts/verify_counts.py         # validate no texts were lost
+python scripts/build_indices.py         # semantic_json → indices.json (for web app)
 ```
 
 `scripts/add_year_field.py` is **deprecated** — kept as a helper library for legacy callers. Running it standalone prints a deprecation notice and exits unless invoked with `--apply`.
@@ -158,6 +160,22 @@ Options:
 - `--volume N` : single volume only
 
 The reference goes to `/tmp/reference_kanripo` by default; override with env var `REF_DIR`. A backup is created in `raw_json_converted_backup/`.
+
+### Epub-based correction
+
+`zizhitongjian.epub` is a Wikisource-sourced epub that serves as a secondary reference. It is not checked into the repo.
+
+| Script | Purpose |
+|---|---|
+| `unpack_epub.py` | Extract 294 xhtml files from the epub into `epub_text/` plain text |
+| `check_against_epub.py` | Find remaining ASCII→CJK moji-bake (165 fixes beyond Kanripo) |
+| `fix_multi_char_mojibake.py` | Fix radical+component splits (纟林→綝, 钅句→钩, etc.; 219 fixes) |
+
+```bash
+python scripts/unpack_epub.py           # one-time: extract epub → epub_text/
+python scripts/check_against_epub.py    # apply ASCII→CJK fixes
+python scripts/fix_multi_char_mojibake.py  # apply radical-split fixes
+```
 
 **Validation helpers:**
 

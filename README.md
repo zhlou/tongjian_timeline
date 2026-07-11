@@ -32,7 +32,7 @@ python src/app.py                 # start at http://localhost:5000
 | Dir | Purpose |
 |---|---|
 | `raw_json/` | Original JSON — Chinese text as `\uXXXX` escapes (294 files) |
-| `raw_json_converted/` | Same data with escapes decoded to Unicode, pretty-printed |
+| `raw_json_converted/` | **Source of truth** — Unicode-decoded, with corrections baked in |
 | `semantic_json/` | Restructured: grouped by year-section with `era_year`, `ganzhi`, and `year` (1405 sections) |
 | `scripts/` | Processing and ETL scripts |
 | `src/` | Web app (Flask backend + templates + static) |
@@ -67,10 +67,12 @@ Each `semantic_json/*.json`:
 Run all from repo root with Python 3.8+:
 
 ```bash
-python scripts/convert_unicode.py     # raw_json → raw_json_converted
-python scripts/restructure_json.py    # raw_json_converted → semantic_json (with year + ganzhi, fixes stale era_name)
-python scripts/verify_counts.py       # validate no texts were lost (expects 41 files × 1-2 stripped ruler-name texts)
-python scripts/build_indices.py      # semantic_json → indices.json (web app)
+python scripts/convert_unicode.py      # raw_json → raw_json_converted
+python scripts/fix_raw_converted.py     # bake vol_name/time_cycle corrections in-place
+python scripts/correct_text.py          # fix ASCII/moji-bake via Kanripo reference
+python scripts/restructure_json.py      # raw_json_converted → semantic_json
+python scripts/verify_counts.py         # validate no texts were lost (expects 41 files × 1-2 stripped ruler-name texts)
+python scripts/build_indices.py         # semantic_json → indices.json (web app)
 ```
 
 ## Web App API

@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 indices.json
 .venv/
+
+# Epub reference (not in repo)
+zizhitongjian.epub
+epub_text/
